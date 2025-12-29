@@ -4,6 +4,7 @@ import { AuthContext } from "../auth/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { saveAccessToken } from "../auth/authStorage";
 import { fakeLoginApi } from "../api/auth/authApi";
+import { Button, TextInput, Paper, Title } from "@mantine/core";
 
 function LoginPage(){
     const authContext = useContext(AuthContext);
@@ -47,31 +48,27 @@ function LoginPage(){
 };
 
     return (
-        <div>
-            <h1>Login</h1>
+        <Paper w={400} mx="auto" mt="xl" p="md" withBorder>
+            <Title order={3} mb="md">Login</Title>
 
             <form>
-                <div>
-                    <label>Email</label>
-                    <input 
-                        type="email" 
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                    />
-                </div>
+                <TextInput
+                    type="email" 
+                    value={email}
+                    label="Email"
+                    onChange={(e) => setEmail(e.target.value)}
+                />
 
-                <div>
-                    <label>Password</label>
-                    <input 
-                        type="password" 
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                    />
-                </div>
+                <TextInput
+                    type="password" 
+                    value={password}
+                    label="Password"
+                    onChange={(e) => setPassword(e.target.value)}
+                />
 
-                <button type="button" onClick={handleSubmit}>Login</button>
+                <Button fullWidth mt="md" type="button" onClick={handleSubmit}>Login</Button>
             </form>
-        </div>
+        </Paper>
     );
 }
 
