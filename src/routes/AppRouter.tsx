@@ -7,6 +7,7 @@ import PostPage from "../pages/PostPage"
 import CategoryPage from "../pages/CategoryPage"
 import TagPage from "../pages/TagPage"
 import EditPostPage from "../pages/EditPostPage"
+import ProtectedRoute from "./ProtectedRoute"
 
 function AppRouter() {
     return (
@@ -14,11 +15,11 @@ function AppRouter() {
             <Route path="/" element={<HomePage />} />
             <Route path="/login" element={<LoginPage />} />
             <Route path="/register" element={<RegisterPage />} />
-            <Route path="/drafts" element={<DraftsPage />} />
+            <Route path="/drafts" element={<ProtectedRoute><DraftsPage /></ProtectedRoute>} />
             <Route path="/post" element={<PostPage />} />
             <Route path="/category" element={<CategoryPage />} />
             <Route path="/tag" element={<TagPage />} />
-            <Route path="/edit-post" element={<EditPostPage />} />
+            <Route path="/edit-post" element={<ProtectedRoute><EditPostPage /></ProtectedRoute>} />
         </Routes>
     )
 }
