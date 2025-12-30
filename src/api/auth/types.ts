@@ -1,3 +1,14 @@
+export interface User {
+  id: string;      // UUID
+  name: string;
+  email: string;
+}
+
+export interface AuthState {
+  accessToken: string | null;
+  user: User | null;
+}
+
 export type LoginRequest = {
     email: string;
     password: string;
@@ -5,6 +16,11 @@ export type LoginRequest = {
 
 export type LoginResponse = {
     accessToken: string;
+        user: {
+        id: string;
+        name: string;
+        email: string;
+    };
 };
 
 export interface RegisterRequest {

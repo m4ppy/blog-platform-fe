@@ -1,14 +1,18 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { fetchMyDrafts } from "../api/post/postApi";
 import type { Post } from "../api/post/types";
 import { Card, Stack, Title, Text, Button, Group } from "@mantine/core";
+import { AuthContext } from "../auth/AuthContext";
 
 export default function DraftsPage() {
   const [drafts, setDrafts] = useState<Post[]>([]);
+  const authContext = useContext(AuthContext);
 
   useEffect(() => {
-    fetchMyDrafts().then(setDrafts);
-  }, []);
+    if (!authContext?.auth.user) return;
+
+    fetchMyDrafts(authContext.auth.user.id).then(setDrafts);
+  }, [authContext]);
 
   return (
     <Stack>

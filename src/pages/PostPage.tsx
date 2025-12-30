@@ -57,7 +57,7 @@ export default function PostPage() {
                 {/* Meta info */}
                 <Group gap="sm">
                     <Text size="sm" c="dimmed">
-                        By {post.author}
+                        By {post.author.name}
                     </Text>
                     <Text size="sm" c="dimmed">
                         {new Date(post.createdAt).toLocaleDateString()}

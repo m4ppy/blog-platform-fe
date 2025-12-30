@@ -1,11 +1,8 @@
 import { createContext, useEffect, useState } from "react";
 import type { ReactNode } from "react";
 import { useNavigate } from "react-router-dom";
-import { getAccessToken, clearAccessToken } from "./authStorage";
-
-interface AuthState {
-    accessToken: string | null;
-}
+import { getAccessToken, getStoredUser, clearAuthStorage } from "./authStorage";
+import type { AuthState } from "../api/auth/types";
 
 interface AuthContextType {
     auth: AuthState;
@@ -25,21 +22,25 @@ export function AuthProvider({ children }: Props) {
 
     const [auth, setAuth] = useState<AuthState>({
         accessToken: null,
+        user: null,
     });
 
     const [initialized, setInitialized] = useState(false);
 
     useEffect(() => {
         const token = getAccessToken();
-        if (token) {
-            setAuth({ accessToken: token });
+        const user = getStoredUser();
+
+        if (token && user) {
+            setAuth({ accessToken: token, user });
         }
+
         setInitialized(true);
     }, []);
 
     const logout = () => {
-        clearAccessToken();
-        setAuth({ accessToken: null });
+        clearAuthStorage();
+        setAuth({ accessToken: null, user: null });
         navigate("/login", { replace: true });
     };
 
