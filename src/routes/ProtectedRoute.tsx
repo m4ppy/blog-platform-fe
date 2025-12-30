@@ -3,27 +3,27 @@ import { Navigate } from "react-router-dom";
 import { AuthContext } from "../auth/AuthContext";
 
 type Props = {
-  children: React.ReactNode;
+    children: React.ReactNode;
 };
 
 function ProtectedRoute({ children }: Props) {
-  const authContext = useContext(AuthContext);
+    const authContext = useContext(AuthContext);
 
-  if (!authContext) {
-    throw new Error("AuthContext not found");
-  }
+    if (!authContext) {
+        throw new Error("AuthContext not found");
+    }
 
-  const { auth, initialized } = authContext;
+    const { auth, initialized } = authContext;
 
-  if (!initialized) {
-    return null;
-  }
+    if (!initialized) {
+        return null;
+    }
 
-  if (!auth.accessToken) {
-    return <Navigate to="/login" replace />;
-  }
+    if (!auth.accessToken) {
+        return <Navigate to="/login" replace />;
+    }
 
-  return children;
+    return children;
 }
 
 export default ProtectedRoute;

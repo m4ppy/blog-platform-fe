@@ -1,21 +1,20 @@
 export type LoginRequest = {
-  email: string;
-  password: string;
+    email: string;
+    password: string;
 };
 
 export type LoginResponse = {
-  accessToken: string;
+    accessToken: string;
 };
 
-
 export interface RegisterRequest {
-  email: string;
-  password: string;
-  username: string;
+    email: string;
+    password: string;
+    username: string;
 }
 
 export interface RegisterResponse {
-  id: number;
-  email: string;
-  username: string;
+    id: number;
+    email: string;
+    username: string;
 }
