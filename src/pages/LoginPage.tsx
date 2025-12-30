@@ -2,7 +2,7 @@ import { useContext, useState } from "react";
 import { login } from "../api/auth/authApi";
 import { AuthContext } from "../auth/AuthContext";
 import { useNavigate } from "react-router-dom";
-import { saveAccessToken } from "../auth/authStorage";
+import { setAuthStorage } from "../auth/authStorage";
 import { fakeLoginApi } from "../api/auth/authApi";
 import { Button, TextInput, Paper, Title } from "@mantine/core";
 
@@ -24,8 +24,11 @@ function LoginPage() {
 
         localStorage.setItem("accessToken", response.accessToken);
 
-        saveAccessToken(response.accessToken);
-        setAuth({ accessToken: response.accessToken });
+        setAuthStorage(response.accessToken, response.user);
+        setAuth({ 
+            accessToken: response.accessToken,
+            user: response.user,
+        });
 
         navigate("/");
     };
@@ -38,8 +41,11 @@ function LoginPage() {
                 password: password.trim(),
             });
 
-            saveAccessToken(response.accessToken);
-            setAuth({ accessToken: response.accessToken });
+            setAuthStorage(response.accessToken, response.user);
+            setAuth({ 
+                accessToken: response.accessToken,
+                user: response.user,
+            });
 
             navigate("/", { replace: true });
         } catch (e) {

@@ -9,16 +9,16 @@ import {
     Center,
     Loader,
 } from "@mantine/core";
-import { fakeFetchPosts } from "../api/posts/postApi";
-import type { PostSummary } from "../api/posts/types";
+import { fetchPublishedPosts } from "../api/post/postApi";
+import type { Post } from "../api/post/types";
 import { Link } from "react-router-dom";
 
 function HomePage() {
-    const [posts, setPosts] = useState<PostSummary[]>([]);
+    const [posts, setPosts] = useState<Post[]>([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        fakeFetchPosts().then((data) => {
+        fetchPublishedPosts().then((data) => {
             setPosts(data);
             setLoading(false);
         });
@@ -48,12 +48,12 @@ function HomePage() {
                             <Title order={3}>{post.title}</Title>
 
                             <Text c="dimmed" size="sm">
-                                {post.excerpt}
+                                {post.updatedAt}
                             </Text>
 
                             <Group justify="space-between">
                                 <Text size="xs" c="dimmed">
-                                    By {post.author}
+                                    By {post.author.name}
                                 </Text>
                                 <Text size="xs" c="dimmed">
                                     {new Date(

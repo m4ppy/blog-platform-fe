@@ -14,21 +14,28 @@ export async function login(request: LoginRequest): Promise<LoginResponse> {
     return response.data;
 }
 
-export function fakeLoginApi(request: LoginRequest): Promise<LoginResponse> {
-    return new Promise((resolve, reject) => {
-        setTimeout(() => {
-            if (
-                request.email === "test@test.com" &&
-                request.password === "1234"
-            ) {
-                resolve({
-                    accessToken: "fake-jwt-token",
-                });
-            } else {
-                reject(new Error("Invalid credentials"));
-            }
-        }, 500);
-    });
+export function fakeLoginApi(
+  request: LoginRequest
+): Promise<LoginResponse> {
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      if (
+        request.email === "test@test.com" &&
+        request.password === "1234"
+      ) {
+        resolve({
+          accessToken: "fake-jwt-token",
+          user: {
+            id: "550e8400-e29b-41d4-a716-446655440000",
+            name: "leon",
+            email: "test@test.com",
+          },
+        });
+      } else {
+        reject(new Error("Invalid credentials"));
+      }
+    }, 500);
+  });
 }
 
 export function fakeRegisterApi(

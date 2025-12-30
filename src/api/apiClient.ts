@@ -1,5 +1,5 @@
 import axios from "axios";
-import { getAccessToken, clearAccessToken } from "../auth/authStorage";
+import { getAccessToken, clearAuthStorage } from "../auth/authStorage";
 
 export const apiClient = axios.create({
     baseURL: "http://localhost:8080/api/auth",
@@ -33,7 +33,7 @@ apiClient.interceptors.response.use(
     (response) => response,
     (error) => {
         if (error.response?.status === 401) {
-            clearAccessToken();
+            clearAuthStorage();
             window.location.href = "/login";
         }
 
