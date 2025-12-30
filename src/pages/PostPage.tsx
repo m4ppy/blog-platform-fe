@@ -13,8 +13,8 @@ import {
     Button,
 } from "@mantine/core";
 //import { getPostById } from "../api/posts/postApi";  // TODO
-import { fakeFetchPostById } from "../api/posts/fakePostApi"; // FOR TESTING
-import type { Post } from "../api/posts/types";
+import { fakeFetchPostById } from "../api/post/fakePostApi"; // FOR TESTING
+import type { Post } from "../api/post/types";
 
 export default function PostPage() {
     const { id } = useParams<{ id: string }>();
