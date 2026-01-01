@@ -32,3 +32,28 @@ export function fetchMyDrafts(userId: string): Promise<Post[]> {
         }, 300);
     });
 }
+
+
+// api/post/postApi.ts
+export function fakeUpdatePost(
+  postId: number,
+  updated: Partial<Post>
+): Promise<Post> {
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      const index = fakePosts.findIndex(p => p.id === postId);
+      if (index === -1) {
+        reject(new Error("Post not found"));
+        return;
+      }
+
+      fakePosts[index] = {
+        ...fakePosts[index],
+        ...updated,
+        updatedAt: new Date().toISOString(),
+      };
+
+      resolve(fakePosts[index]);
+    }, 400);
+  });
+}
