@@ -27,7 +27,7 @@ function AppRouter() {
             <Route path="/categories" element={<CategoryPage />} />
             <Route path="/tags" element={<TagPage />} />
             <Route
-                path="/edit-post"
+                path="/posts/:id/edit"
                 element={
                     <ProtectedRoute>
                         <EditPostPage />

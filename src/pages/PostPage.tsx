@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import {
     Container,
     Title,
@@ -18,6 +18,7 @@ import type { Post } from "../api/post/types";
 
 export default function PostPage() {
     const { id } = useParams<{ id: string }>();
+    const navigate = useNavigate();
 
     const [post, setPost] = useState<Post | null>(null);
     const [loading, setLoading] = useState(true);
@@ -89,7 +90,7 @@ export default function PostPage() {
                 <Button
                     variant="outline"
                     mt="md"
-                    onClick={() => alert("Edit functionality not implemented yet")}
+                    onClick={() => navigate(`/posts/${post.id}/edit`)}
                 >Edit Post</Button>
                 <Button variant="light" mt="md" onClick={() => window.history.back()}>
                     Back
