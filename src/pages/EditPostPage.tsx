@@ -1,96 +1,64 @@
-// pages/EditPostPage.tsx
-import {
-  Button,
-  Container,
-  Stack,
-  TextInput,
-  Textarea,
-  Title,
-} from "@mantine/core";
 import { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
-import { fakeUpdatePost } from "../api/post/postApi";
-import { fakeFetchPostById } from "../api/post/fakePostApi";
+import { useParams, useNavigate } from "react-router-dom";
+import { Container, Loader, Center } from "@mantine/core";
+import PostForm from "../components/PostForm";
 import type { Post } from "../api/post/types";
+import { fakeFetchPostById, savePost } from "../api/post/fakePostApi";
 
 export default function EditPostPage() {
-  const { id } = useParams();
+  const { postId } = useParams();
   const navigate = useNavigate();
 
   const [post, setPost] = useState<Post | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState<boolean>(!!postId);
 
+  // ----------------------------------
+  // Load post when editing
+  // ----------------------------------
   useEffect(() => {
-    if (!id) return;
+    if (!postId) return;
 
-    fakeFetchPostById(Number(id))
-      .then(setPost)
-      .finally(() => setLoading(false));
-  }, [id]);
+    fakeFetchPostById(postId).then((data) => {
+      setPost(data);
+      setLoading(false);
+    });
+  }, [postId]);
 
-  const handleSave = async () => {
-    if (!post) return;
-
-    await fakeUpdatePost(post.id, {
-      title: post.title,
-      content: post.content,
-      category: post.category,
-      tags: post.tags,
+  // ----------------------------------
+  // Submit handler (create or update)
+  // ----------------------------------
+  const handleSubmit = async (formData: {
+    title: string;
+    content: string;
+    category: string;
+    tags: string[];
+    status: "draft" | "published";
+  }) => {
+    const savedPost = await savePost({
+      id: post?.id,
+      ...formData,
     });
 
-    navigate(`/posts/${post.id}`);
+    navigate(`/posts/${savedPost.id}`);
   };
 
-  if (loading) return <div>Loading...</div>;
-  if (!post) return <div>Post not found</div>;
+  // ----------------------------------
+  // Loading state
+  // ----------------------------------
+  if (loading) {
+    return (
+      <Center h={400}>
+        <Loader />
+      </Center>
+    );
+  }
 
+  // ----------------------------------
+  // Render
+  // ----------------------------------
   return (
-    <Container size="sm">
-      <Stack>
-        <Title order={2}>Edit Post</Title>
-
-        <TextInput
-          label="Title"
-          value={post.title}
-          onChange={(e) =>
-            setPost({ ...post, title: e.target.value })
-          }
-        />
-
-        <TextInput
-          label="Category"
-          value={post.category}
-          onChange={(e) =>
-            setPost({ ...post, category: e.target.value })
-          }
-        />
-
-        <TextInput
-          label="Tags (comma separated)"
-          value={post.tags?.join(", ") || ""}
-          onChange={(e) =>
-            setPost({
-              ...post,
-              tags: e.target.value
-                .split(",")
-                .map(t => t.trim()),
-            })
-          }
-        />
-
-        <Textarea
-          label="Content"
-          minRows={10}
-          value={post.content}
-          onChange={(e) =>
-            setPost({ ...post, content: e.target.value })
-          }
-        />
-
-        <Button onClick={handleSave}>
-          Save Changes
-        </Button>
-      </Stack>
+    <Container size="md">
+      <PostForm initialPost={post} onSubmit={handleSubmit} />
     </Container>
   );
 }

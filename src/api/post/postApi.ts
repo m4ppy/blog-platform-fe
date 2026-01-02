@@ -11,11 +11,11 @@ export async function getPostById(id: string | number): Promise<Post> {
  * Public posts (HomePage)
  */
 export function fetchPublishedPosts(): Promise<Post[]> {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      resolve(fakePosts.filter(p => p.status === "published"));
-    }, 300);
-  });
+    return new Promise((resolve) => {
+        setTimeout(() => {
+            resolve(fakePosts.filter((p) => p.status === "published"));
+        }, 300);
+    });
 }
 
 /**
@@ -26,34 +26,31 @@ export function fetchMyDrafts(userId: string): Promise<Post[]> {
         setTimeout(() => {
             resolve(
                 fakePosts.filter(
-                    p => p.status === "draft" && p.author.id.toString() === userId
-                )
+                    (p) =>
+                        p.status === "draft" &&
+                        p.author.id.toString() === userId,
+                ),
             );
         }, 300);
     });
 }
 
+export function fakeUpdatePost(postId: number, updated: Partial<Post>): Promise<Post> {
+    return new Promise((resolve, reject) => {
+        setTimeout(() => {
+            const index = fakePosts.findIndex((p) => p.id === postId);
+            if (index === -1) {
+                reject(new Error("Post not found"));
+                return;
+            }
 
-// api/post/postApi.ts
-export function fakeUpdatePost(
-  postId: number,
-  updated: Partial<Post>
-): Promise<Post> {
-  return new Promise((resolve, reject) => {
-    setTimeout(() => {
-      const index = fakePosts.findIndex(p => p.id === postId);
-      if (index === -1) {
-        reject(new Error("Post not found"));
-        return;
-      }
+            fakePosts[index] = {
+                ...fakePosts[index],
+                ...updated,
+                updatedAt: new Date().toISOString(),
+            };
 
-      fakePosts[index] = {
-        ...fakePosts[index],
-        ...updated,
-        updatedAt: new Date().toISOString(),
-      };
-
-      resolve(fakePosts[index]);
-    }, 400);
-  });
+            resolve(fakePosts[index]);
+        }, 400);
+    });
 }
