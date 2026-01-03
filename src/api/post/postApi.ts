@@ -35,22 +35,51 @@ export function fetchMyDrafts(userId: string): Promise<Post[]> {
     });
 }
 
-export function fakeUpdatePost(postId: number, updated: Partial<Post>): Promise<Post> {
-    return new Promise((resolve, reject) => {
-        setTimeout(() => {
-            const index = fakePosts.findIndex((p) => p.id === postId);
-            if (index === -1) {
-                reject(new Error("Post not found"));
-                return;
-            }
+export function fakeSavePost(
+  postId: number | null,
+  data: Partial<Post>
+): Promise<Post> {
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      // ----------------------------------
+      // CREATE
+      // ----------------------------------
+      if (postId === null) {
+        const newPost: Post = {
+          id: fakePosts.length + 1,
+          title: data.title ?? "",
+          content: data.content ?? "",
+          category: data.category ?? "",
+          tags: data.tags ?? [],
+          status: data.status ?? "draft",
+          author: data.author!, // from auth context later
+          readingTime: 1,
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+        };
 
-            fakePosts[index] = {
-                ...fakePosts[index],
-                ...updated,
-                updatedAt: new Date().toISOString(),
-            };
+        fakePosts.push(newPost);
+        resolve(newPost);
+        return;
+      }
 
-            resolve(fakePosts[index]);
-        }, 400);
-    });
+      // ----------------------------------
+      // UPDATE
+      // ----------------------------------
+      const index = fakePosts.findIndex((p) => p.id === postId);
+      if (index === -1) {
+        reject(new Error("Post not found"));
+        return;
+      }
+
+      fakePosts[index] = {
+        ...fakePosts[index],
+        ...data,
+        updatedAt: new Date().toISOString(),
+      };
+
+      resolve(fakePosts[index]);
+    }, 400);
+  });
 }
+
