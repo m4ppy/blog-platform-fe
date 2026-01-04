@@ -5,33 +5,30 @@ import PostForm from "../components/PostForm";
 import type { Post } from "../api/post/types";
 import { fakeSavePost } from "../api/post/postApi";
 import { fakeFetchPostById } from "../api/post/fakePostApi";
-
+    
 export default function EditPostPage() {
-  const { postId } = useParams<{ postId: string }>();
+  const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
 
-  const numericPostId = postId ? Number(postId) : null;
-
   const [post, setPost] = useState<Post | null>(null);
-  const [loading, setLoading] = useState<boolean>(!!numericPostId);
+  const [loading, setLoading] = useState<boolean>(!!id);
 
   // ----------------------------------
   // Load post when editing
   // ----------------------------------
   useEffect(() => {
-    if (!numericPostId) return;
+    if (!id) return;
 
-    fakeFetchPostById(numericPostId).then((data) => {
+    fakeFetchPostById(Number(id)).then((data) => {
       setPost(data);
       setLoading(false);
     });
-  }, [numericPostId]);
-
+  }, [id]);
   // ----------------------------------
   // Create / Update handler
   // ----------------------------------
   const handleSubmit = async (formData: Partial<Post>) => {
-    const savedPost = await fakeSavePost(numericPostId, formData);
+    const savedPost = await fakeSavePost(Number(id), formData);
     navigate(`/posts/${savedPost.id}`);
   };
 
