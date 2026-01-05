@@ -13,7 +13,7 @@ import {
     Button,
 } from "@mantine/core";
 //import { getPostById } from "../api/posts/postApi";  // TODO
-import { fakeFetchPostById } from "../api/post/fakePostApi"; // FOR TESTING
+import { fakeFetchPostById } from "../api/post/postApi"; // FOR TESTING
 import type { Post } from "../api/post/types";
 
 export default function PostPage() {

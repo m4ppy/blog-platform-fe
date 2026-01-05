@@ -3,8 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { Container, Loader, Center } from "@mantine/core";
 import PostForm from "../components/PostForm";
 import type { Post } from "../api/post/types";
-import { fakeSavePost } from "../api/post/postApi";
-import { fakeFetchPostById } from "../api/post/fakePostApi";
+import { fakeSavePost, fakeFetchPostById } from "../api/post/postApi";
     
 export default function EditPostPage() {
   const { id } = useParams<{ id: string }>();
