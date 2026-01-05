@@ -1,6 +1,6 @@
 import apiClient from "../apiClient.ts";
 import type { Post } from "./types.ts";
-import { fakePosts } from "./fakePosts.ts";
+import { fakePosts } from "@/api/post/fakePosts.ts";
 
 export async function getPostById(id: string | number): Promise<Post> {
     const response = await apiClient.get(`/posts/${id}`);
@@ -83,3 +83,22 @@ export function fakeSavePost(
   });
 }
 
+/** list page */
+export function fakeFetchPosts(): Promise<Post[]> {
+    return new Promise((resolve) => {
+        setTimeout(() => resolve(fakePosts), 300);
+    });
+}
+
+/** detail page */
+export function fakeFetchPostById(id: number): Promise<Post> {
+    return new Promise((resolve, reject) => {
+        setTimeout(() => {
+            const post = fakePosts.find((p) => p.id === id);
+            if (!post) {
+                reject(new Error("Post not found"));
+            }
+            resolve(post!);
+        }, 300);
+    });
+}
