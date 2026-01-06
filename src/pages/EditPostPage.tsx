@@ -3,7 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { Container, Loader, Center } from "@mantine/core";
 import PostForm from "../components/PostForm";
 import type { Post } from "../api/post/types";
-import { fakeSavePost, fakeFetchPostById } from "../api/post/postApi";
+import { fakeCreatePost, fakeUpdatePost, fakeFetchPostById } from "../api/post/postApi";
     
 export default function EditPostPage() {
   const { id } = useParams<{ id: string }>();
@@ -27,9 +27,19 @@ export default function EditPostPage() {
   // Create / Update handler
   // ----------------------------------
   const handleSubmit = async (formData: Partial<Post>) => {
-    const savedPost = await fakeSavePost(Number(id), formData);
+    let savedPost;
+
+    if (id) {
+        // edit mode
+        savedPost = await fakeUpdatePost(Number(id), formData);
+    } else {
+        // create mode
+        savedPost = await fakeCreatePost(formData);
+    }
+
     navigate(`/posts/${savedPost.id}`);
-  };
+};
+
 
   if (loading) {
     return (

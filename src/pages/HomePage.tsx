@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import {
     Container,
     Title,
@@ -8,12 +8,17 @@ import {
     Group,
     Center,
     Loader,
+    Button,
 } from "@mantine/core";
 import { fetchPublishedPosts } from "../api/post/postApi";
 import type { Post } from "../api/post/types";
 import { Link } from "react-router-dom";
+import { AuthContext } from "../auth/AuthContext";
 
 function HomePage() {
+    const authContext = useContext(AuthContext);
+    const isLoggedIn = !!authContext?.auth.accessToken;
+
     const [posts, setPosts] = useState<Post[]>([]);
     const [loading, setLoading] = useState(true);
 
@@ -64,6 +69,11 @@ function HomePage() {
                         </Stack>
                     </Card>
                 ))}
+                {isLoggedIn && (
+                    <Button component={Link} to="/posts/new">
+                        Create
+                    </Button>
+                )}
             </Stack>
         </Container>
     );

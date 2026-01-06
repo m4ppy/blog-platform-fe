@@ -26,6 +26,14 @@ function AppRouter() {
             <Route path="/posts/:id" element={<PostPage />} />
             <Route path="/categories" element={<CategoryPage />} />
             <Route path="/tags" element={<TagPage />} />
+            <Route 
+                path="/posts/new" 
+                element={
+                    <ProtectedRoute>
+                        <EditPostPage />
+                    </ProtectedRoute>
+                }
+            />
             <Route
                 path="/posts/:id/edit"
                 element={
