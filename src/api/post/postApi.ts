@@ -1,6 +1,8 @@
 import apiClient from "../apiClient.ts";
 import type { Post } from "./types.ts";
-import { fakePosts } from "@/api/post/fakePosts.ts";
+import { fakePosts } from "./fakePosts.ts";
+import type { User } from "../auth/types.ts";
+import { getStoredUser } from "../../auth/authStorage.ts";
 
 export async function getPostById(id: string | number): Promise<Post> {
     const response = await apiClient.get(`/posts/${id}`);
@@ -35,7 +37,42 @@ export function fetchMyDrafts(userId: string): Promise<Post[]> {
     });
 }
 
-export function fakeSavePost(
+let nextPostId = fakePosts.length
+    ? Math.max(...fakePosts.map((p) => p.id)) + 1
+    : 1;
+
+const user: User = getStoredUser()!;
+
+export function fakeCreatePost(
+    data: Partial<Post>,
+): Promise<Post> {
+    return new Promise((resolve) => {
+        setTimeout(() => {
+            const now = new Date().toISOString();
+
+            const newPost: Post = {
+                id: nextPostId++,
+                title: data.title ?? "",
+                content: data.content ?? "",
+                category: data.category ?? "",
+                tags: data.tags ?? [],
+                status: data.status ?? "draft",
+                author: {
+                    id: user.id,
+                    name: user.name,    
+                },
+                readingTime: 1,
+                createdAt: now,
+                updatedAt: now,
+            };
+
+            fakePosts.unshift(newPost);
+            resolve(newPost);
+        }, 400);
+    });
+}
+
+export function fakeUpdatePost(
   postId: number | null,
   data: Partial<Post>
 ): Promise<Post> {
