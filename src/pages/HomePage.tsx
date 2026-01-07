@@ -17,7 +17,6 @@ import { AuthContext } from "../auth/AuthContext";
 
 function HomePage() {
     const authContext = useContext(AuthContext);
-    const isLoggedIn = !!authContext?.auth.accessToken;
 
     const [posts, setPosts] = useState<Post[]>([]);
     const [loading, setLoading] = useState(true);
@@ -69,11 +68,9 @@ function HomePage() {
                         </Stack>
                     </Card>
                 ))}
-                {isLoggedIn && (
-                    <Button component={Link} to="/posts/new">
-                        Create
-                    </Button>
-                )}
+                <Button component={Link} to="/posts/new">
+                    Create
+                </Button>
             </Stack>
         </Container>
     );

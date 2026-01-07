@@ -1,27 +1,116 @@
 import { useEffect, useState } from "react";
+import {
+    Title,
+    Button,
+    Group,
+    Table,
+    Text,
+    Modal,
+    TextInput,
+    Container,
+    Stack,
+    ActionIcon,
+    Center,
+} from "@mantine/core";
+import { IconTrash } from "@tabler/icons-react";
 import { fetchCategories } from "../api/category/categoryApi";
 import type { Category } from "../api/category/types";
-import { Card, Stack, Title, Text } from "@mantine/core";
 
 export default function CategoryPage() {
     const [categories, setCategories] = useState<Category[]>([]);
+    const [opened, setOpened] = useState(false);
+    const [newCategoryName, setNewCategoryName] = useState("");
 
     useEffect(() => {
         fetchCategories().then(setCategories);
     }, []);
 
-    return (
-        <Stack>
-            <Title order={2}>Categories</Title>
+    // fake create (frontend only)
+    const handleCreateCategory = () => {
+        if (!newCategoryName.trim()) return;
 
-            {categories.map((category) => (
-                <Card key={category.id} withBorder>
-                    <Text fw={600}>{category.name}</Text>
-                    <Text size="sm" c="dimmed">
-                        {category.postCount} posts
-                    </Text>
-                </Card>
-            ))}
-        </Stack>
+        const newCategory: Category = {
+            id: crypto.randomUUID(),
+            name: newCategoryName,
+            postCount: 0,
+        };
+
+        setCategories((prev) => [...prev, newCategory]);
+        setNewCategoryName("");
+        setOpened(false);
+    };
+
+    // fake delete (frontend only)
+    const handleDeleteCategory = (id: string) => {
+        setCategories((prev) => prev.filter((c) => c.id !== id));
+    };
+
+    return (
+        <Container fluid h="100vh">
+            <Center h="100%">
+            {/* Header */}
+            <Group justify="space-between" mb="md">
+                <Title order={2}>Categories</Title>
+                <Button onClick={() => setOpened(true)}>Create</Button>
+            </Group>
+
+            {/* Category List */}
+            <Table withTableBorder highlightOnHover>
+                <Table.Thead>
+                    <Table.Tr>
+                        <Table.Th>Category</Table.Th>
+                        <Table.Th>Posts</Table.Th>
+                        <Table.Th ta="right">Actions</Table.Th>
+                    </Table.Tr>
+                </Table.Thead>
+
+                <Table.Tbody>
+                    {categories.map((category) => (
+                        <Table.Tr key={category.id}>
+                            <Table.Td>
+                                <Text fw={500}>{category.name}</Text>
+                            </Table.Td>
+                            <Table.Td>{category.postCount}</Table.Td>
+                            <Table.Td ta="right">
+                                <ActionIcon
+                                    color="red"
+                                    variant="subtle"
+                                    onClick={() => handleDeleteCategory(category.id)}
+                                >
+                                    <IconTrash size={16} />
+                                </ActionIcon>
+                            </Table.Td>
+                        </Table.Tr>
+                    ))}
+                </Table.Tbody>
+            </Table>
+
+            {/* Create Category Modal */}
+            <Modal
+                opened={opened}
+                onClose={() => setOpened(false)}
+                title="Create Category"
+                centered
+            >
+                <Stack>
+                    <TextInput
+                        label="Category name"
+                        placeholder="e.g. React"
+                        value={newCategoryName}
+                        onChange={(e) => setNewCategoryName(e.target.value)}
+                    />
+
+                    <Group justify="flex-end">
+                        <Button variant="default" onClick={() => setOpened(false)}>
+                            Cancel
+                        </Button>
+                        <Button onClick={handleCreateCategory}>
+                            Create
+                        </Button>
+                    </Group>
+                </Stack>
+            </Modal>
+            </Center>
+        </Container>
     );
 }

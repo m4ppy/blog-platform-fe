@@ -13,7 +13,7 @@ function App() {
                         <NavBar />
                     </AppShell.Header>
 
-                    <AppShell.Main>
+                    <AppShell.Main h="100vh">
                         <AppRouter />
                     </AppShell.Main>
                 </AppShell>
