@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import { fetchTags } from "../api/tag/tagApi";
 import type { Tag } from "../api/tag/types";
-import { Stack, Title, Group, Badge } from "@mantine/core";
+import { Stack, Title, Group, Badge, Button } from "@mantine/core";
+import { Link } from "react-router-dom";
 
 export default function TagPage() {
   const [tags, setTags] = useState<Tag[]>([]);
@@ -21,6 +22,10 @@ export default function TagPage() {
           </Badge>
         ))}
       </Group>
+
+      <Button component={Link} to="/tags/new">
+        Create
+      </Button>
     </Stack>
   );
 }
