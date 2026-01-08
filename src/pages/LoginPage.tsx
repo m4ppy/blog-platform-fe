@@ -2,9 +2,18 @@ import { useContext, useState } from "react";
 import { login } from "../api/auth/authApi";
 import { AuthContext } from "../auth/AuthContext";
 import { useNavigate } from "react-router-dom";
+import {
+    Container,
+    Card,
+    Title,
+    TextInput,
+    PasswordInput,
+    Button,
+    Stack,
+    Alert,
+} from "@mantine/core";
 import { setAuthStorage } from "../auth/authStorage";
 import { fakeLoginApi } from "../api/auth/authApi";
-import { Button, TextInput, Paper, Title } from "@mantine/core";
 
 function LoginPage() {
     const authContext = useContext(AuthContext);
@@ -18,6 +27,8 @@ function LoginPage() {
 
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const [error, setError] = useState<string | null>(null);
+    const [loading, setLoading] = useState(false);
 
     const handleLogin = async () => {
         const response = await login({ email, password });
@@ -35,6 +46,9 @@ function LoginPage() {
 
     // Fake login for testing without backend
     const handleSubmit = async () => {
+        setError(null);
+        setLoading(true);
+
         try {
             const response = await fakeLoginApi({
                 email: email.trim(),
@@ -50,35 +64,51 @@ function LoginPage() {
             navigate("/", { replace: true });
         } catch (e) {
             console.error("Login failed", e);
+        } finally {
+            setLoading(false);
         }
     };
 
     return (
-        <Paper w={400} mx="auto" mt="xl" p="md" withBorder>
-            <Title order={3} mb="md">
-                Login
-            </Title>
-
-            <form>
-                <TextInput
-                    type="email"
-                    value={email}
-                    label="Email"
-                    onChange={(e) => setEmail(e.target.value)}
-                />
-
-                <TextInput
-                    type="password"
-                    value={password}
-                    label="Password"
-                    onChange={(e) => setPassword(e.target.value)}
-                />
-
-                <Button fullWidth mt="md" type="button" onClick={handleSubmit}>
+        <Container size="xs" py="xl">
+            <Card withBorder shadow="sm">
+                <Title order={2} ta="center" mb="md">
                     Login
-                </Button>
-            </form>
-        </Paper>
+                </Title>
+
+                <Stack>
+                    {error && (
+                        <Alert color="red" variant="light">
+                            {error}
+                        </Alert>
+                    )}
+
+                    <TextInput
+                        label="Email"
+                        placeholder="you@example.com"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        required
+                    />
+
+                    <PasswordInput
+                        label="Password"
+                        placeholder="Your password"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        required
+                    />
+
+                    <Button
+                        fullWidth
+                        onClick={handleSubmit}
+                        loading={loading}
+                    >
+                        Login
+                    </Button>
+                </Stack>
+            </Card>
+        </Container>
     );
 }
 
