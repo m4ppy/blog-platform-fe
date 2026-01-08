@@ -1,17 +1,17 @@
 import axios from "axios";
-import { getAccessToken, clearAccessToken } from "../../auth/authStorage";
+import { getAccessToken, clearAuthStorage } from "../auth/authStorage";
 
 export const apiClient = axios.create({
     baseURL: "http://localhost:8080/api/auth",
-    headers: {"Content-Type": "application/json" },
+    headers: { "Content-Type": "application/json" },
     withCredentials: true,
 });
 
 export const loginApi = (email: string, password: string) => {
-  return apiClient.post("/auth/login", {
-    email,
-    password,
-  });
+    return apiClient.post("/auth/login", {
+        email,
+        password,
+    });
 };
 
 apiClient.interceptors.request.use(
@@ -26,20 +26,19 @@ apiClient.interceptors.request.use(
     },
     (error) => {
         return Promise.reject(error);
-    }
+    },
 );
 
-
 apiClient.interceptors.response.use(
-  (response) => response,
-  (error) => {
-    if (error.response?.status === 401) {
-      clearAccessToken();
-      window.location.href = "/login";
-    }
+    (response) => response,
+    (error) => {
+        if (error.response?.status === 401) {
+            clearAuthStorage();
+            window.location.href = "/login";
+        }
 
-    return Promise.reject(error);
-  }
+        return Promise.reject(error);
+    },
 );
 
 export default apiClient;

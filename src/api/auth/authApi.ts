@@ -1,14 +1,17 @@
 import axiosInstance from "../axiosInstance";
-import type { LoginRequest, LoginResponse, RegisterRequest, RegisterResponse } from "./types";
+import type {
+    LoginRequest,
+    LoginResponse,
+    RegisterRequest,
+    RegisterResponse,
+} from "./types";
 
-export async function login(
-  request: LoginRequest
-): Promise<LoginResponse> {
-  const response = await axiosInstance.post<LoginResponse>(
-    "/auth/login",
-    request
-  );
-  return response.data;
+export async function login(request: LoginRequest): Promise<LoginResponse> {
+    const response = await axiosInstance.post<LoginResponse>(
+        "/auth/login",
+        request,
+    );
+    return response.data;
 }
 
 export function fakeLoginApi(
@@ -16,9 +19,17 @@ export function fakeLoginApi(
 ): Promise<LoginResponse> {
   return new Promise((resolve, reject) => {
     setTimeout(() => {
-      if (request.email === "test@test.com" && request.password === "1234") {
+      if (
+        request.email === "test@test.com" &&
+        request.password === "1234"
+      ) {
         resolve({
           accessToken: "fake-jwt-token",
+          user: {
+            id: "550e8400-e29b-41d4-a716-446655440000",
+            name: "leon",
+            email: "test@test.com",
+          },
         });
       } else {
         reject(new Error("Invalid credentials"));
@@ -28,25 +39,25 @@ export function fakeLoginApi(
 }
 
 export function fakeRegisterApi(
-  request: RegisterRequest
+    request: RegisterRequest,
 ): Promise<RegisterResponse> {
-  return new Promise((resolve, reject) => {
-    setTimeout(() => {
-      if (!request.email || !request.password || !request.username) {
-        reject(new Error("Missing fields"));
-        return;
-      }
+    return new Promise((resolve, reject) => {
+        setTimeout(() => {
+            if (!request.email || !request.password || !request.username) {
+                reject(new Error("Missing fields"));
+                return;
+            }
 
-      if (request.email === "test@test.com") {
-        reject(new Error("Email already exists"));
-        return;
-      }
+            if (request.email === "test@test.com") {
+                reject(new Error("Email already exists"));
+                return;
+            }
 
-      resolve({
-        id: Date.now(),
-        email: request.email,
-        username: request.username,
-      });
-    }, 500);
-  });
+            resolve({
+                id: Date.now(),
+                email: request.email,
+                username: request.username,
+            });
+        }, 500);
+    });
 }
