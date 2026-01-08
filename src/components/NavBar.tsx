@@ -9,8 +9,8 @@ export default function Navbar() {
     const isLoggedIn = !!authContext?.auth.accessToken;
 
     return (
-        <Container size="lg" h="100%">
-            <Group justify="space-between" h="100%" bg="gray">
+        <Container size="lg" h="100%" bg="transparent">
+            <Group justify="space-between" h="100%">
                 {/* Logo / Title */}
                 <Title order={3}>
                     <Anchor
