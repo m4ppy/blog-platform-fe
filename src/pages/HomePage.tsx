@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import {
     Container,
     Title,
@@ -13,11 +13,8 @@ import {
 import { fetchPublishedPosts } from "../api/post/postApi";
 import type { Post } from "../api/post/types";
 import { Link } from "react-router-dom";
-import { AuthContext } from "../auth/AuthContext";
 
 function HomePage() {
-    const authContext = useContext(AuthContext);
-
     const [posts, setPosts] = useState<Post[]>([]);
     const [loading, setLoading] = useState(true);
 
