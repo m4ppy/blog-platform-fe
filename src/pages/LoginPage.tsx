@@ -1,6 +1,4 @@
 import { useContext, useState } from "react";
-import { login } from "../api/auth/authApi";
-import { AuthContext } from "../auth/AuthContext";
 import { useNavigate } from "react-router-dom";
 import {
     Container,
@@ -12,8 +10,9 @@ import {
     Stack,
     Alert,
 } from "@mantine/core";
+import { AuthContext } from "../auth/AuthContext";
+import { login } from "../api/auth/authApi";
 import { setAuthStorage } from "../auth/authStorage";
-import { fakeLoginApi } from "../api/auth/authApi";
 
 function LoginPage() {
     const authContext = useContext(AuthContext);
@@ -31,39 +30,23 @@ function LoginPage() {
     const [loading, setLoading] = useState(false);
 
     const handleLogin = async () => {
-        const response = await login({ email, password });
-
-        localStorage.setItem("accessToken", response.accessToken);
-
-        setAuthStorage(response.accessToken, response.user);
-        setAuth({ 
-            accessToken: response.accessToken,
-            user: response.user,
-        });
-
-        navigate("/");
-    };
-
-    // Fake login for testing without backend
-    const handleSubmit = async () => {
         setError(null);
         setLoading(true);
 
         try {
-            const response = await fakeLoginApi({
-                email: email.trim(),
-                password: password.trim(),
-            });
-
+            const response = await login({ email, password });
+    
+            localStorage.setItem(response.accessToken, response.accessToken);
+    
             setAuthStorage(response.accessToken, response.user);
             setAuth({ 
                 accessToken: response.accessToken,
                 user: response.user,
             });
-
-            navigate("/", { replace: true });
-        } catch (e) {
-            console.error("Login failed", e);
+    
+            navigate("/");
+        } catch (e: any) {
+            setError(e.response?.data?.message || "Login failed");
         } finally {
             setLoading(false);
         }
@@ -101,7 +84,7 @@ function LoginPage() {
 
                     <Button
                         fullWidth
-                        onClick={handleSubmit}
+                        onClick={handleLogin}
                         loading={loading}
                     >
                         Login
