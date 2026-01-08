@@ -36,6 +36,20 @@ function HomePage() {
     return (
         <Container size="md" py="xl">
             <Stack gap="md">
+                {/* Header */}
+                <Group justify="space-between">
+                    <Title order={2}>Posts</Title>
+
+                    <Button
+                        component={Link}
+                        to="/posts/new"
+                        size="sm"
+                    >
+                        Create
+                    </Button>
+                </Group>
+
+                {/* Post List */}
                 {posts.map((post) => (
                     <Card
                         key={post.id}
@@ -65,9 +79,6 @@ function HomePage() {
                         </Stack>
                     </Card>
                 ))}
-                <Button component={Link} to="/posts/new">
-                    Create
-                </Button>
             </Stack>
         </Container>
     );

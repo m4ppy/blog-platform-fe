@@ -1,5 +1,15 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import {
+    Container,
+    Card,
+    Title,
+    TextInput,
+    PasswordInput,
+    Button,
+    Stack,
+    Alert,
+} from "@mantine/core";
 import { fakeRegisterApi } from "../api/auth/authApi";
 
 function RegisterPage() {
@@ -31,42 +41,53 @@ function RegisterPage() {
     };
 
     return (
-        <div>
-            <h1>Register</h1>
+        <Container size="xs" py="xl">
+            <Card withBorder shadow="sm">
+                <Title order={2} ta="center" mb="md">
+                    Register
+                </Title>
 
-            {error && <p style={{ color: "red" }}>{error}</p>}
+                <Stack>
+                    {error && (
+                        <Alert color="red" variant="light">
+                            {error}
+                        </Alert>
+                    )}
 
-            <div>
-                <label>Email</label>
-                <input
-                    type="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                />
-            </div>
+                    <TextInput
+                        label="Email"
+                        placeholder="you@example.com"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        required
+                    />
 
-            <div>
-                <label>Username</label>
-                <input
-                    type="username"
-                    value={username}
-                    onChange={(e) => setUsername(e.target.value)}
-                />
-            </div>
+                    <TextInput
+                        label="Username"
+                        placeholder="your username"
+                        value={username}
+                        onChange={(e) => setUsername(e.target.value)}
+                        required
+                    />
 
-            <div>
-                <label>Password</label>
-                <input
-                    type="password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                />
-            </div>
+                    <PasswordInput
+                        label="Password"
+                        placeholder="Your password"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        required
+                    />
 
-            <button onClick={handleSubmit} disabled={loading}>
-                {loading ? "Registering..." : "Register"}
-            </button>
-        </div>
+                    <Button
+                        fullWidth
+                        onClick={handleSubmit}
+                        loading={loading}
+                    >
+                        Register
+                    </Button>
+                </Stack>
+            </Card>
+        </Container>
     );
 }
 
