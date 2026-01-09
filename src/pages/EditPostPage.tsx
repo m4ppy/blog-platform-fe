@@ -2,56 +2,63 @@ import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Container, Loader, Center } from "@mantine/core";
 import PostForm from "../components/PostForm";
-import type { Post } from "../api/post/types";
-import { fakeCreatePost, fakeUpdatePost, fakeFetchPostById } from "../api/post/postApi";
-    
+import type { Post, PostRequest } from "../api/post/types";
+import { createPost, updatePost, getPostById } from "../api/post/postApi";
+import type { Category } from "../api/category/types";
+import { getCategories } from "../api/category/categoryApi";
+import type { Tag } from "../api/tag/types";
+import { getTags } from "../api/tag/tagApi";
+
 export default function EditPostPage() {
-  const { id } = useParams<{ id: string }>();
-  const navigate = useNavigate();
+    const { id } = useParams<{ id: string }>();
+    const navigate = useNavigate();
 
-  const [post, setPost] = useState<Post | null>(null);
-  const [loading, setLoading] = useState<boolean>(!!id);
+    const [post, setPost] = useState<Post | null>(null);
+    const [categories, setCategories] = useState<Category[]>([]);
+    const [tags, setTags] = useState<Tag[]>([]);
+    const [loading, setLoading] = useState<boolean>(!!id);
 
-  // ----------------------------------
-  // Load post when editing
-  // ----------------------------------
-  useEffect(() => {
-    if (!id) return;
+    useEffect(() => {
+        if (!id) return;
 
-    fakeFetchPostById(Number(id)).then((data) => {
-      setPost(data);
-      setLoading(false);
-    });
-  }, [id]);
-  // ----------------------------------
-  // Create / Update handler
-  // ----------------------------------
-  const handleSubmit = async (formData: Partial<Post>) => {
-    let savedPost;
+        getPostById(Number(id)).then((data) => {
+            setPost(data);
+            setLoading(false);
+        });
 
-    if (id) {
-        // edit mode
-        savedPost = await fakeUpdatePost(Number(id), formData);
-    } else {
-        // create mode
-        savedPost = await fakeCreatePost(formData);
+        getCategories().then(setCategories);
+
+        getTags().then(setTags);
+    }, [id]);
+
+    const handleSubmit = async (formData: PostRequest) => {
+        let savedPost;
+
+        if (id) {
+            savedPost = await updatePost(Number(id), formData);
+        } else {
+            savedPost = await createPost(formData);
+        }
+
+        navigate(`/posts/${savedPost.id}`);
+    };
+
+    if (loading) {
+        return (
+            <Center h={400}>
+                <Loader />
+            </Center>
+        );
     }
 
-    navigate(`/posts/${savedPost.id}`);
-};
-
-
-  if (loading) {
     return (
-      <Center h={400}>
-        <Loader />
-      </Center>
+        <Container size="md">
+            <PostForm 
+                initialPost={post} 
+                categories={categories} 
+                tags={tags}
+                onSubmit={handleSubmit} 
+            />
+        </Container>
     );
-  }
-
-  return (
-    <Container size="md">
-      <PostForm initialPost={post} onSubmit={handleSubmit} />
-    </Container>
-  );
 }

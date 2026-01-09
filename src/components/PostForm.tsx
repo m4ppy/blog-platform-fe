@@ -10,39 +10,35 @@ import {
   CloseButton,
 } from "@mantine/core";
 import type { Post, PostStatus } from "../api/post/types";
+import type { Category } from "../api/category/types";
+import type { Tag } from "../api/tag/types";
 
 interface PostFormData {
   title: string;
   content: string;
-  category: string;
-  tags: string[];
+  categoryId: string;
+  tagIds: string[];
   status: PostStatus;
 }
 
 interface PostFormProps {
   initialPost?: Post | null;
+  categories: Category[];
+  tags?: Tag[];
   onSubmit: (data: PostFormData) => void;
 }
 
-export default function PostForm({ initialPost, onSubmit }: PostFormProps) {
-  // ----------------------------
-  // Basic fields
-  // ----------------------------
+export default function PostForm({ initialPost, categories, tags: allTags = [], onSubmit }: PostFormProps) {
   const [title, setTitle] = useState(initialPost?.title ?? "");
   const [content, setContent] = useState(initialPost?.content ?? "");
-  const [category, setCategory] = useState(initialPost?.category ?? "");
 
-  // ----------------------------
-  // Status (draft / published)
-  // ----------------------------
   const [status, setStatus] = useState<PostStatus>(
     initialPost?.status ?? "draft"
   );
 
-  // ----------------------------
-  // Tag logic (local only)
-  // ----------------------------
-  const [tags, setTags] = useState<string[]>(initialPost?.tags ?? []);
+  const [categoryId, setCategoryId] = useState(initialPost?.category?.id ?? "");
+
+  const [tags, setTags] = useState<string[]>(initialPost?.tags?.map(tag => tag.name) ?? []);
   const [tagInput, setTagInput] = useState("");
 
   const addTag = () => {
@@ -54,26 +50,27 @@ export default function PostForm({ initialPost, onSubmit }: PostFormProps) {
     setTagInput("");
   };
 
-  const removeTag = (tag: string) => {
-    setTags(tags.filter((t) => t !== tag));
+  const removeTag = (tagName: string) => {
+    setTags(tags.filter((t) => t !== tagName));
   };
 
-  // ----------------------------
-  // Submit
-  // ----------------------------
   const handleSubmit = () => {
+    const tagIds = tags
+      .map(
+        (name) =>
+          allTags.find((t) => t.name === name)?.id
+      )
+      .filter((id): id is string => Boolean(id));
+
     onSubmit({
       title,
       content,
-      category,
-      tags,
+      categoryId,
+      tagIds,
       status,
     });
   };
 
-  // ----------------------------
-  // Render
-  // ----------------------------
   return (
     <Stack gap="md">
       {/* Title */}
@@ -94,11 +91,16 @@ export default function PostForm({ initialPost, onSubmit }: PostFormProps) {
       />
 
       {/* Category */}
-      <TextInput
+      <Select
         label="Category"
-        value={category}
-        onChange={(e) => setCategory(e.currentTarget.value)}
-        placeholder="Category name"
+        placeholder="Select category"
+        value={categoryId}
+        onChange={(value) => setCategoryId(value ?? "")}
+        data={categories.map((c) => ({
+            value: c.id,
+            label: c.name,
+        }))}
+        required
       />
 
       {/* Tags */}

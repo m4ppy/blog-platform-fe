@@ -10,7 +10,7 @@ import {
     Loader,
     Button,
 } from "@mantine/core";
-import { fetchPublishedPosts } from "../api/post/postApi";
+import { fetchPosts } from "../api/post/postApi";
 import type { Post } from "../api/post/types";
 import { Link } from "react-router-dom";
 
@@ -19,7 +19,7 @@ function HomePage() {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        fetchPublishedPosts().then((data) => {
+        fetchPosts().then((data) => {
             setPosts(data);
             setLoading(false);
         });

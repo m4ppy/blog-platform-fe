@@ -1,10 +1,5 @@
-export interface PostSummary {
-    id: number;
-    title: string;
-    excerpt: string;
-    author: string;
-    createdAt: string;
-}
+import type { Category } from "../category/types";
+import type { Tag } from "../tag/types";
 
 export interface Author {
     id: string;
@@ -12,15 +7,24 @@ export interface Author {
 }
 
 export type PostStatus = "draft" | "published";
+
 export interface Post {
-    id: number;
+    id: string;
     title: string;
     content: string;
     author: Author;
-    category: string;
-    tags?: string[];
+    category: Category;
+    tags?: Tag[];
     readingTime: number;
     createdAt: string;
     updatedAt: string;
+    status: PostStatus;
+}
+
+export interface PostRequest {
+    title: string;
+    content: string;
+    categoryId: string;
+    tagIds: string[];
     status: PostStatus;
 }

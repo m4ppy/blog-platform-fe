@@ -1,4 +1,3 @@
-import type { AxiosResponse } from "axios";
 import axiosInstance from "../axiosInstance";
 import type {
     LoginRequest,
@@ -7,7 +6,7 @@ import type {
 } from "./types";
 
 export async function login(credentials: LoginRequest): Promise<AuthResponse> {
-    const response: AxiosResponse<AuthResponse> = await axiosInstance.post(
+    const response = await axiosInstance.post<AuthResponse>(
         "/auth/login",
         credentials,
     );
@@ -21,5 +20,3 @@ export async function register(request: RegisterRequest): Promise<AuthResponse> 
     );
     return response.data;
 }
-
-
