@@ -3,13 +3,12 @@ import axios from "axios";
 import { getAccessToken, clearAuthStorage } from "../auth/authStorage";
 
 const axiosInstance = axios.create({
-    baseURL: "http://localhost:8080/api",
+    baseURL: "/api/v1",
     headers: {
         "Content-Type": "application/json",
-    },
-    withCredentials: true,
+    }
 });
-
+    
 /**
  * Request interceptor
  * - Attach access token if it exists

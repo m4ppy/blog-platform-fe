@@ -1,11 +1,10 @@
-import apiClient from "../apiClient.ts";
+import axiosInstance from "../axiosInstance.ts";
 import type { Post } from "./types.ts";
 import { fakePosts } from "./fakePosts.ts";
 import type { User } from "../auth/types.ts";
-import { getStoredUser } from "../../auth/authStorage.ts";
 
 export async function getPostById(id: string | number): Promise<Post> {
-    const response = await apiClient.get(`/posts/${id}`);
+    const response = await axiosInstance.get(`/posts/${id}`);
     return response.data;
 }
 
@@ -40,8 +39,6 @@ export function fetchMyDrafts(userId: string): Promise<Post[]> {
 let nextPostId = fakePosts.length
     ? Math.max(...fakePosts.map((p) => p.id)) + 1
     : 1;
-
-const user: User = getStoredUser()!;
 
 export function fakeCreatePost(
     data: Partial<Post>,

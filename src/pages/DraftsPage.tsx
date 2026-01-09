@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { fetchMyDrafts } from "../api/post/postApi";
 import type { Post } from "../api/post/types";
 import {
@@ -10,17 +10,17 @@ import {
     Button,
     Container,
 } from "@mantine/core";
-import { AuthContext } from "../auth/AuthContext";
+import { useAuth } from "../auth/AuthContext";
 
 export default function DraftsPage() {
     const [drafts, setDrafts] = useState<Post[]>([]);
-    const authContext = useContext(AuthContext);
+    const { isAuthenticated, token } = useAuth();
 
     useEffect(() => {
-        if (!authContext?.auth.user) return;
+        if (!isAuthenticated || !token) return;
 
-        fetchMyDrafts(authContext.auth.user.id).then(setDrafts);
-    }, [authContext]);
+        fetchMyDrafts(token).then(setDrafts);
+    }, [isAuthenticated, token]);
 
     return (
         <Container size="lg" py="md">

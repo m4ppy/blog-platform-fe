@@ -1,52 +1,71 @@
-import { createContext, useEffect, useState } from "react";
+import { createContext, useEffect, useState, useCallback, useContext } from "react";
 import type { ReactNode } from "react";
 import { useNavigate } from "react-router-dom";
-import { getAccessToken, getStoredUser, clearAuthStorage } from "./authStorage";
-import type { AuthState } from "../api/auth/types";
+import { getAccessToken, setAccessToken, clearAuthStorage } from "./authStorage";
 
 interface AuthContextType {
-    auth: AuthState;
-    initialized: boolean;
-    setAuth: (auth: AuthState) => void;
-    logout: () => void;
+  isAuthenticated: boolean;
+  token: string | null;
+  initialized: boolean;
+  login: (token: string) => void;
+  logout: () => void;
 }
 
 export const AuthContext = createContext<AuthContextType | null>(null);
 
 type Props = {
-    children: ReactNode;
+  children: ReactNode;
 };
 
 export function AuthProvider({ children }: Props) {
-    const navigate = useNavigate();
+  const navigate = useNavigate();
 
-    const [auth, setAuth] = useState<AuthState>({
-        accessToken: null,
-        user: null,
-    });
+  const [token, setToken] = useState<string | null>(null);
+  const [initialized, setInitialized] = useState(false);
 
-    const [initialized, setInitialized] = useState(false);
+  // Initialize auth from localStorage
+  useEffect(() => {
+    const storedToken = getAccessToken();
 
-    useEffect(() => {
-        const token = getAccessToken();
-        const user = getStoredUser();
+    if (storedToken) {
+      setToken(storedToken);
+    }
 
-        if (token && user) {
-            setAuth({ accessToken: token, user });
-        }
+    setInitialized(true);
+  }, []);
 
-        setInitialized(true);
-    }, []);
+  const login = useCallback((newToken: string) => {
+    setAccessToken(newToken);
+    setToken(newToken);
+  }, []);
 
-    const logout = () => {
-        clearAuthStorage();
-        setAuth({ accessToken: null, user: null });
-        navigate("/login", { replace: true });
-    };
+  const logout = useCallback(() => {
+    clearAuthStorage();
+    setToken(null);
+    navigate("/login", { replace: true });
+  }, [navigate]);
 
-    return (
-        <AuthContext.Provider value={{ auth, initialized, setAuth, logout }}>
-            {children}
-        </AuthContext.Provider>
-    );
+  const value: AuthContextType = {
+    token,
+    isAuthenticated: Boolean(token),
+    initialized,
+    login,
+    logout,
+  };
+
+  return (
+    <AuthContext.Provider value={value}>
+      {children}
+    </AuthContext.Provider>
+  );
+}
+
+export function useAuth(): AuthContextType {
+  const context = useContext(AuthContext);
+
+  if (!context) {
+    throw new Error("useAuth must be used within an AuthProvider");
+  }
+
+  return context;
 }
