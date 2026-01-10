@@ -25,7 +25,7 @@ export default function EditPostPage() {
         if (id) {
             console.log("EditPostPage mounted, id =", id);
 
-            getPostById(Number(id))
+            getPostById(id)
                 .then((data) => {
                     console.log("post response", data);
                     setPost(data);
@@ -55,7 +55,7 @@ export default function EditPostPage() {
         let savedPost;
 
         if (id) {
-            savedPost = await updatePost(Number(id), formData);
+            savedPost = await updatePost(id, formData);
         } else {
             savedPost = await createPost(formData);
         }

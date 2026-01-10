@@ -14,13 +14,13 @@ import { useAuth } from "../auth/AuthContext";
 
 export default function DraftsPage() {
     const [drafts, setDrafts] = useState<Post[]>([]);
-    const { isAuthenticated, token } = useAuth();
+    const { isAuthenticated } = useAuth();
 
     useEffect(() => {
-        if (!isAuthenticated || !token) return;
+        if (!isAuthenticated) return;
 
-        fetchMyDrafts(token).then(setDrafts);
-    }, [isAuthenticated, token]);
+        fetchMyDrafts().then(setDrafts);
+    }, [isAuthenticated]);
 
     return (
         <Container size="lg" py="md">

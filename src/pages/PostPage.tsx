@@ -26,7 +26,7 @@ export default function PostPage() {
     useEffect(() => {
         if (!id) return;
 
-        getPostById(Number(id))
+        getPostById(id)
             .then(setPost)
             .catch(() => setError("Failed to load post"))
             .finally(() => setLoading(false));
