@@ -6,7 +6,7 @@ export interface Author {
     name: string;
 }
 
-export type PostStatus = "draft" | "published";
+export type PostStatus = "DRAFT" | "PUBLISHED";
 
 export interface Post {
     id: string;

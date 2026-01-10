@@ -19,17 +19,37 @@ export default function EditPostPage() {
     const [loading, setLoading] = useState<boolean>(!!id);
 
     useEffect(() => {
-        if (!id) return;
+        
+        setLoading(true);
+        
+        if (id) {
+            console.log("EditPostPage mounted, id =", id);
 
-        getPostById(Number(id)).then((data) => {
-            setPost(data);
-            setLoading(false);
-        });
+            getPostById(Number(id))
+                .then((data) => {
+                    console.log("post response", data);
+                    setPost(data);
+                })
+                .catch((e) => console.error("post error", e));
+        }
 
-        getCategories().then(setCategories);
+        getCategories()
+        .then((data) => {
+            console.log("categories response", data);
+            setCategories(data);
+            })
+            .catch((e) => console.error("categories error", e));
 
-        getTags().then(setTags);
+        getTags()
+            .then((data) => {
+                console.log("tags response", data);
+                setTags(data);
+            })
+            .catch((e) => console.error("tags error", e));
+
+        setLoading(false);
     }, [id]);
+
 
     const handleSubmit = async (formData: PostRequest) => {
         let savedPost;
@@ -43,7 +63,25 @@ export default function EditPostPage() {
         navigate(`/posts/${savedPost.id}`);
     };
 
+    const isEdit = Boolean(id);
+
     if (loading) {
+        return (
+            <Center h={400}>
+                <Loader />
+            </Center>
+        );
+    }
+
+    if (isEdit && !post) {
+        return (
+            <Center h={400}>
+                <Loader />
+            </Center>
+        );
+    }
+
+    if (categories.length === 0 || tags.length === 0) {
         return (
             <Center h={400}>
                 <Loader />
@@ -54,7 +92,7 @@ export default function EditPostPage() {
     return (
         <Container size="md">
             <PostForm 
-                initialPost={post} 
+                initialPost={post ?? undefined} 
                 categories={categories} 
                 tags={tags}
                 onSubmit={handleSubmit} 

@@ -1,161 +1,131 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
-  TextInput,
-  Textarea,
-  Button,
-  Group,
-  Stack,
-  Select,
-  Box,
-  CloseButton,
+    TextInput,
+    Textarea,
+    Button,
+    Group,
+    Stack,
+    Select,
+    MultiSelect,
 } from "@mantine/core";
 import type { Post, PostStatus } from "../api/post/types";
 import type { Category } from "../api/category/types";
 import type { Tag } from "../api/tag/types";
 
 interface PostFormData {
-  title: string;
-  content: string;
-  categoryId: string;
-  tagIds: string[];
-  status: PostStatus;
+    title: string;
+    content: string;
+    categoryId: string;
+    tagIds: string[];
+    status: PostStatus;
 }
 
 interface PostFormProps {
-  initialPost?: Post | null;
-  categories: Category[];
-  tags?: Tag[];
-  onSubmit: (data: PostFormData) => void;
+    initialPost?: Post | null;
+    categories: Category[];
+    tags?: Tag[];
+    onSubmit: (data: PostFormData) => void;
 }
 
-export default function PostForm({ initialPost, categories, tags: allTags = [], onSubmit }: PostFormProps) {
-  const [title, setTitle] = useState(initialPost?.title ?? "");
-  const [content, setContent] = useState(initialPost?.content ?? "");
+export default function PostForm({
+    initialPost,
+    categories,
+    tags: allTags = [],
+    onSubmit,
+}: PostFormProps) {
+    const [title, setTitle] = useState(initialPost?.title ?? "");
+    const [content, setContent] = useState(initialPost?.content ?? "");
+    const [status, setStatus] = useState<PostStatus>(initialPost?.status ?? "DRAFT");
+    const [categoryId, setCategoryId] = useState(initialPost?.category?.id ?? "");
+    const [tagIds, setTagIds] = useState<string[]>([]);
 
-  const [status, setStatus] = useState<PostStatus>(
-    initialPost?.status ?? "draft"
-  );
+    useEffect(() => {
+        if (!initialPost) return;
 
-  const [categoryId, setCategoryId] = useState(initialPost?.category?.id ?? "");
+        setTitle(initialPost.title);
+        setContent(initialPost.content);
+        setStatus(initialPost.status);
+        setCategoryId(initialPost.category.id);
 
-  const [tags, setTags] = useState<string[]>(initialPost?.tags?.map(tag => tag.name) ?? []);
-  const [tagInput, setTagInput] = useState("");
+        if (!initialPost.tags) return;
+        setTagIds(initialPost.tags.map(tag => tag.id));
+    }, [initialPost]);
 
-  const addTag = () => {
-    const value = tagInput.trim();
-    if (!value) return;
-    if (tags.includes(value)) return;
 
-    setTags([...tags, value]);
-    setTagInput("");
-  };
+    const handleSubmit = () => {
+        onSubmit({
+            title,
+            content,
+            categoryId,
+            tagIds,
+            status,
+        });
+    };
 
-  const removeTag = (tagName: string) => {
-    setTags(tags.filter((t) => t !== tagName));
-  };
+    return (
+        <Stack gap="md">
+            {/* Title */}
+            <TextInput
+                label="Title"
+                value={title}
+                onChange={(e) => setTitle(e.currentTarget.value)}
+                required
+            />
 
-  const handleSubmit = () => {
-    const tagIds = tags
-      .map(
-        (name) =>
-          allTags.find((t) => t.name === name)?.id
-      )
-      .filter((id): id is string => Boolean(id));
+            {/* Content */}
+            <Textarea
+                label="Content"
+                minRows={12}
+                value={content}
+                onChange={(e) => setContent(e.currentTarget.value)}
+                required
+            />
 
-    onSubmit({
-      title,
-      content,
-      categoryId,
-      tagIds,
-      status,
-    });
-  };
+            {/* Category */}
+            <Select
+                label="Category"
+                placeholder={categories.length ? "Select a category" : "Loading..."}
+                searchable
+                data={categories.map(c => ({
+                    value: c.id.toString(),
+                    label: c.name,
+                }))}
+                value={categoryId}
+                onChange={(val) => setCategoryId(val ?? "")}
+            />
 
-  return (
-    <Stack gap="md">
-      {/* Title */}
-      <TextInput
-        label="Title"
-        value={title}
-        onChange={(e) => setTitle(e.currentTarget.value)}
-        required
-      />
+            {/* Tags */}
+            <MultiSelect
+                label="Tags"
+                placeholder="Select tags"
+                searchable
+                data={allTags.map(tag => ({
+                    value: tag.id,   // UUID string
+                    label: tag.name,
+                }))}
+                value={tagIds}
+                onChange={setTagIds}
+            />
 
-      {/* Content */}
-      <Textarea
-        label="Content"
-        minRows={12}
-        value={content}
-        onChange={(e) => setContent(e.currentTarget.value)}
-        required
-      />
 
-      {/* Category */}
-      <Select
-        label="Category"
-        placeholder="Select category"
-        value={categoryId}
-        onChange={(value) => setCategoryId(value ?? "")}
-        data={categories.map((c) => ({
-            value: c.id,
-            label: c.name,
-        }))}
-        required
-      />
 
-      {/* Tags */}
-      <Box>
-        <TextInput
-          label="Tags"
-          placeholder="Type a tag and press Enter"
-          value={tagInput}
-          onChange={(e) => setTagInput(e.currentTarget.value)}
-          onKeyDown={(e) => {
-            if (e.key === "Enter") {
-              e.preventDefault();
-              addTag();
-            }
-          }}
-        />
+            {/* Status */}
+            <Select
+                label="Status"
+                value={status}
+                onChange={(value) => setStatus(value as PostStatus)}
+                data={[
+                    { value: "DRAFT", label: "Draft" },
+                    { value: "PUBLISHED", label: "Published" },
+                ]}
+            />
 
-        <Group mt="xs" gap="xs">
-          {tags.map((tag) => (
-            <Box
-              key={tag}
-              px="sm"
-              py={4}
-              bg="gray.2"
-              style={{
-                borderRadius: 12,
-                display: "flex",
-                alignItems: "center",
-                gap: 6,
-              }}
-            >
-              {tag}
-              <CloseButton size="sm" onClick={() => removeTag(tag)} />
-            </Box>
-          ))}
-        </Group>
-      </Box>
-
-      {/* Status */}
-      <Select
-        label="Status"
-        value={status}
-        onChange={(value) => setStatus(value as PostStatus)}
-        data={[
-          { value: "draft", label: "Draft" },
-          { value: "published", label: "Published" },
-        ]}
-      />
-
-      {/* Submit */}
-      <Group justify="flex-end">
-        <Button onClick={handleSubmit}>
-          {initialPost ? "Save" : "Create"}
-        </Button>
-      </Group>
-    </Stack>
-  );
+            {/* Submit */}
+            <Group justify="flex-end">
+                <Button onClick={handleSubmit}>
+                    {initialPost ? "Save" : "Create"}
+                </Button>
+            </Group>
+        </Stack>
+    );
 }

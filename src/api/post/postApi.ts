@@ -1,3 +1,4 @@
+import { getAccessToken } from "../../auth/authStorage.ts";
 import axiosInstance from "../axiosInstance.ts";
 import type { Post, PostRequest } from "./types.ts";
 
@@ -21,7 +22,12 @@ export async function fetchMyDrafts(token: string): Promise<Post[]> {
 }
 
 export async function createPost(data: PostRequest): Promise<Post> {
-    const response = await axiosInstance.post("/posts", data);
+    const token = getAccessToken();
+    const response = await axiosInstance.post("/posts", data, {
+        headers: {
+            Authorization: `Bearer ${token}`,
+        },
+    });
     return response.data;
 }
 
