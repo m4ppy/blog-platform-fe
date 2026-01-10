@@ -13,7 +13,7 @@ import {
     Card,
 } from "@mantine/core";
 import { IconTrash } from "@tabler/icons-react";
-import { fetchCategories } from "../api/category/categoryApi";
+import { getCategories, createCategory, deleteCategory } from "../api/category/categoryApi";
 import type { Category } from "../api/category/types";
 
 export default function CategoryPage() {
@@ -22,26 +22,23 @@ export default function CategoryPage() {
     const [newCategoryName, setNewCategoryName] = useState("");
 
     useEffect(() => {
-        fetchCategories().then(setCategories);
+        getCategories().then(setCategories);
     }, []);
 
-    // fake create (frontend only)
-    const handleCreateCategory = () => {
+    const handleCreateCategory = async () => {
         if (!newCategoryName.trim()) return;
 
-        const newCategory: Category = {
-            id: crypto.randomUUID(),
-            name: newCategoryName,
-            postCount: 0,
-        };
+        const created = await createCategory(newCategoryName);
 
-        setCategories((prev) => [...prev, newCategory]);
+        setCategories((prev) => [...prev, created]);
         setNewCategoryName("");
         setOpened(false);
     };
 
-    // fake delete (frontend only)
-    const handleDeleteCategory = (id: string) => {
+
+    const handleDeleteCategory = async (id: string) => {
+        await deleteCategory(id);
+
         setCategories((prev) => prev.filter((c) => c.id !== id));
     };
 

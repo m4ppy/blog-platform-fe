@@ -1,6 +1,4 @@
-import { useContext, useState } from "react";
-import { login } from "../api/auth/authApi";
-import { AuthContext } from "../auth/AuthContext";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
     Container,
@@ -12,58 +10,38 @@ import {
     Stack,
     Alert,
 } from "@mantine/core";
-import { setAuthStorage } from "../auth/authStorage";
-import { fakeLoginApi } from "../api/auth/authApi";
+import { useAuth } from "../auth/AuthContext";
+import { login as loginApi } from "../api/auth/authApi";
 
 function LoginPage() {
-    const authContext = useContext(AuthContext);
     const navigate = useNavigate();
-
-    if (!authContext) {
-        throw new Error("AuthContext is not available");
-    }
-
-    const { setAuth } = authContext;
-
+    const { login } = useAuth();
+    
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [error, setError] = useState<string | null>(null);
     const [loading, setLoading] = useState(false);
-
+    
     const handleLogin = async () => {
-        const response = await login({ email, password });
-
-        localStorage.setItem("accessToken", response.accessToken);
-
-        setAuthStorage(response.accessToken, response.user);
-        setAuth({ 
-            accessToken: response.accessToken,
-            user: response.user,
-        });
-
-        navigate("/");
-    };
-
-    // Fake login for testing without backend
-    const handleSubmit = async () => {
-        setError(null);
         setLoading(true);
+        setError(null);
 
         try {
-            const response = await fakeLoginApi({
-                email: email.trim(),
-                password: password.trim(),
+            // Call backend login API
+            const response = await loginApi({
+                email,
+                password,
             });
 
-            setAuthStorage(response.accessToken, response.user);
-            setAuth({ 
-                accessToken: response.accessToken,
-                user: response.user,
-            });
+            // Store token in AuthContext
+            login(response.token);
 
-            navigate("/", { replace: true });
-        } catch (e) {
-            console.error("Login failed", e);
+            // Redirect
+            navigate("/");
+        } catch (err: any) {
+            setError(
+                err.response?.data?.message ?? "Login failed"
+        );
         } finally {
             setLoading(false);
         }
@@ -101,7 +79,7 @@ function LoginPage() {
 
                     <Button
                         fullWidth
-                        onClick={handleSubmit}
+                        onClick={handleLogin}
                         loading={loading}
                     >
                         Login

@@ -12,8 +12,7 @@ import {
     Center,
     Button,
 } from "@mantine/core";
-//import { getPostById } from "../api/posts/postApi";  // TODO
-import { fakeFetchPostById } from "../api/post/postApi"; // FOR TESTING
+import { getPostById } from "../api/post/postApi";
 import type { Post } from "../api/post/types";
 
 export default function PostPage() {
@@ -27,7 +26,7 @@ export default function PostPage() {
     useEffect(() => {
         if (!id) return;
 
-        fakeFetchPostById(Number(id))
+        getPostById(id)
             .then(setPost)
             .catch(() => setError("Failed to load post"))
             .finally(() => setLoading(false));
@@ -65,7 +64,7 @@ export default function PostPage() {
                     </Text>
 
                     {post.category && (
-                        <Badge variant="light">{post.category}</Badge>
+                        <Badge variant="light">{post.category.name}</Badge>
                     )}
                 </Group>
 
@@ -73,8 +72,8 @@ export default function PostPage() {
                 {post.tags && post.tags.length > 0 && (
                     <Group gap="xs">
                         {post.tags.map((tag) => (
-                            <Badge key={tag} variant="outline">
-                                #{tag}
+                            <Badge key={tag.id} variant="outline">
+                                #{tag.name}
                             </Badge>
                         ))}
                     </Group>

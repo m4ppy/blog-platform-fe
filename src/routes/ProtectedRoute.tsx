@@ -1,29 +1,24 @@
-import { useContext } from "react";
+import type { ReactNode } from "react";
 import { Navigate } from "react-router-dom";
-import { AuthContext } from "../auth/AuthContext";
+import { useAuth } from "../auth/AuthContext";
 
 type Props = {
-    children: React.ReactNode;
+  children: ReactNode;
 };
 
 function ProtectedRoute({ children }: Props) {
-    const authContext = useContext(AuthContext);
+  const { isAuthenticated, initialized } = useAuth();
 
-    if (!authContext) {
-        throw new Error("AuthContext not found");
-    }
+  // Wait until auth state is restored from localStorage
+  if (!initialized) {
+    return null; // or a loading spinner
+  }
 
-    const { auth, initialized } = authContext;
+  if (!isAuthenticated) {
+    return <Navigate to="/login" replace />;
+  }
 
-    if (!initialized) {
-        return null;
-    }
-
-    if (!auth.accessToken) {
-        return <Navigate to="/login" replace />;
-    }
-
-    return children;
+  return <>{children}</>;
 }
 
 export default ProtectedRoute;
