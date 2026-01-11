@@ -6,48 +6,47 @@ import {
     Table,
     Text,
     Modal,
-    TextInput,
+    TagsInput,
     Container,
     Stack,
     ActionIcon,
     Card,
 } from "@mantine/core";
 import { IconTrash } from "@tabler/icons-react";
-import { fetchTags } from "../api/tag/tagApi";
+import { getTags, createTags, deleteTag } from "../api/tag/tagApi";
 import type { Tag } from "../api/tag/types";
 
 export default function TagPage() {
     const [tags, setTags] = useState<Tag[]>([]);
     const [opened, setOpened] = useState(false);
-    const [newTagName, setNewTagName] = useState("");
+    const [newTagNames, setNewTagNames] = useState<string[]>([]);
+
 
     useEffect(() => {
-        fetchTags().then(setTags);
+        getTags().then(setTags);
     }, []);
 
-    // fake create (frontend only)
-    const handleCreateTag = () => {
-        if (!newTagName.trim()) return;
+    const handleCreateTags = async () => {
+        if (newTagNames.length === 0) return;
 
-        const newTag: Tag = {
-            id: crypto.randomUUID(),
-            name: newTagName,
-            postCount: 0,
-        };
+        const created = await createTags(newTagNames);
 
-        setTags((prev) => [...prev, newTag]);
-        setNewTagName("");
+        setTags((prev) => {
+            const map = new Map(prev.map(t => [t.id, t]));
+            created.forEach(t => map.set(t.id, t));
+            return Array.from(map.values());
+        });
+
+        setNewTagNames([]);
         setOpened(false);
     };
 
-    // fake delete (frontend only)
-    const handleDeleteTag = (id: string) => {
-        setTags((prev) => prev.filter((c) => c.id !== id));
+    const handleDeleteTag = async (id: string) => { 
+        await deleteTag(id); setTags((prev) => prev.filter((t) => t.id !== id)); 
     };
 
     return (
-        <Container fluid>
-            <Container size="lg" py="md">
+        <Container size="md" py="xl">
             <Card withBorder m="md">
                 {/* Header */}
                 <Group justify="space-between" mb="md">
@@ -90,29 +89,29 @@ export default function TagPage() {
                 <Modal
                     opened={opened}
                     onClose={() => setOpened(false)}
-                    title="Create Tag"
+                    title="Create Tags"
                     centered
                 >
                     <Stack>
-                        <TextInput
-                            label="Tag name"
-                            placeholder="e.g. React"
-                            value={newTagName}
-                            onChange={(e) => setNewTagName(e.target.value)}
+                        <TagsInput
+                            label="Tags"
+                            placeholder="Type and press Enter"
+                            value={newTagNames}
+                            onChange={setNewTagNames}
+                            clearable
                         />
 
                         <Group justify="flex-end">
-                            <Button variant="default" onClick={() => setOpened(false)}>
-                                Cancel
-                            </Button>
-                            <Button onClick={handleCreateTag}>
-                                Create
-                            </Button>
+                        <Button variant="default" onClick={() => setOpened(false)}>
+                            Cancel
+                        </Button>
+                        <Button onClick={handleCreateTags}>
+                            Create
+                        </Button>
                         </Group>
                     </Stack>
                 </Modal>
             </Card>
-            </Container>
         </Container>
     );
 }

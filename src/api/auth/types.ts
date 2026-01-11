@@ -6,31 +6,21 @@ export interface User {
 
 export interface AuthState {
   accessToken: string | null;
-  user: User | null;
+  isAuthenticated: boolean;
 }
 
-export type LoginRequest = {
+export interface LoginRequest {
     email: string;
     password: string;
-};
+}
 
-export type LoginResponse = {
-    accessToken: string;
-        user: {
-        id: string;
-        name: string;
-        email: string;
-    };
-};
+export interface AuthResponse {
+    token: string;
+    expiresIn: number;
+}
 
 export interface RegisterRequest {
     email: string;
+    name: string;
     password: string;
-    username: string;
-}
-
-export interface RegisterResponse {
-    id: number;
-    email: string;
-    username: string;
 }

@@ -10,13 +10,15 @@ import {
     Stack,
     Alert,
 } from "@mantine/core";
-import { fakeRegisterApi } from "../api/auth/authApi";
+import { register as registerApi } from "../api/auth/authApi";
+import { useAuth } from "../auth/AuthContext";
 
 function RegisterPage() {
     const navigate = useNavigate();
+    const { login } = useAuth();
 
     const [email, setEmail] = useState("");
-    const [username, setUsername] = useState("");
+    const [name, setName] = useState("");
     const [password, setPassword] = useState("");
     const [error, setError] = useState<string | null>(null);
     const [loading, setLoading] = useState(false);
@@ -26,13 +28,16 @@ function RegisterPage() {
         setLoading(true);
 
         try {
-            await fakeRegisterApi({
+            const response = await registerApi({
                 email: email.trim(),
-                username: username.trim(),
+                name: name.trim(),
                 password: password.trim(),
             });
 
-            navigate("/login");
+            // Store token in AuthContext
+            login(response.token);
+
+            navigate("/");
         } catch (e) {
             setError((e as Error).message);
         } finally {
@@ -63,10 +68,10 @@ function RegisterPage() {
                     />
 
                     <TextInput
-                        label="Username"
-                        placeholder="your username"
-                        value={username}
-                        onChange={(e) => setUsername(e.target.value)}
+                        label="Name"
+                        placeholder="your name"
+                        value={name}
+                        onChange={(e) => setName(e.target.value)}
                         required
                     />
 

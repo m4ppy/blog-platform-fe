@@ -11,9 +11,9 @@ import {
     Loader,
     Center,
     Button,
+    Card,
 } from "@mantine/core";
-//import { getPostById } from "../api/posts/postApi";  // TODO
-import { fakeFetchPostById } from "../api/post/postApi"; // FOR TESTING
+import { getPostById, deletePost } from "../api/post/postApi";
 import type { Post } from "../api/post/types";
 
 export default function PostPage() {
@@ -27,11 +27,18 @@ export default function PostPage() {
     useEffect(() => {
         if (!id) return;
 
-        fakeFetchPostById(Number(id))
+        getPostById(id)
             .then(setPost)
             .catch(() => setError("Failed to load post"))
             .finally(() => setLoading(false));
     }, [id]);
+
+    const handleDeletePost = async () => {
+        if (!id) return;
+        
+        await deletePost(id);
+        navigate("/");
+    }
 
     if (loading) {
         return (
@@ -51,7 +58,8 @@ export default function PostPage() {
 
     return (
         <Container size="md" py="xl">
-            <Stack gap="md">
+            <Card withBorder m="md">
+            <Stack gap="xs">
                 {/* Title */}
                 <Title order={1}>{post.title}</Title>
 
@@ -65,7 +73,7 @@ export default function PostPage() {
                     </Text>
 
                     {post.category && (
-                        <Badge variant="light">{post.category}</Badge>
+                        <Badge variant="light">{post.category.name}</Badge>
                     )}
                 </Group>
 
@@ -73,8 +81,8 @@ export default function PostPage() {
                 {post.tags && post.tags.length > 0 && (
                     <Group gap="xs">
                         {post.tags.map((tag) => (
-                            <Badge key={tag} variant="outline">
-                                #{tag}
+                            <Badge key={tag.id} variant="outline">
+                                #{tag.name}
                             </Badge>
                         ))}
                     </Group>
@@ -92,10 +100,16 @@ export default function PostPage() {
                     mt="md"
                     onClick={() => navigate(`/posts/${post.id}/edit`)}
                 >Edit Post</Button>
+                <Button 
+                    variant="outline"
+                    mt="md"
+                    onClick={handleDeletePost}
+                >Delete Post</Button>
                 <Button variant="light" mt="md" onClick={() => window.history.back()}>
                     Back
                 </Button>
             </Stack>
+            </Card>
         </Container>
     );
 }

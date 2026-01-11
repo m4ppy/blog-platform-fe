@@ -1,12 +1,9 @@
 import { Group, Title, Button, Container, Anchor } from "@mantine/core";
 import { Link } from "react-router-dom";
-import { useContext } from "react";
-import { AuthContext } from "../auth/AuthContext";
+import { useAuth } from "../auth/AuthContext";
 
 export default function Navbar() {
-    const authContext = useContext(AuthContext);
-
-    const isLoggedIn = !!authContext?.auth.accessToken;
+    const { isAuthenticated, logout } = useAuth();
 
     return (
         <Container size="lg" h="100%" bg="transparent">
@@ -32,7 +29,7 @@ export default function Navbar() {
                         <Anchor component={Link} to="/tags">
                             Tags
                         </Anchor>
-                        {isLoggedIn && (
+                        {isAuthenticated && (
                             <Anchor component={Link} to="/drafts">
                                 Drafts
                             </Anchor>
@@ -42,7 +39,7 @@ export default function Navbar() {
 
                 {/* Right side */}
                 <Group>
-                    {!isLoggedIn ? (
+                    {!isAuthenticated ? (
                         <>
                             <Button
                                 component={Link}
@@ -56,7 +53,7 @@ export default function Navbar() {
                             </Button>
                         </>
                     ) : (
-                        <Button color="red" onClick={authContext?.logout}>
+                        <Button color="red" onClick={logout}>
                             Logout
                         </Button>
                     )}
