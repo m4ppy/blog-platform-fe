@@ -46,8 +46,7 @@ export default function TagPage() {
     };
 
     return (
-        <Container fluid>
-            <Container size="lg" py="md">
+        <Container size="md" py="xl">
             <Card withBorder m="md">
                 {/* Header */}
                 <Group justify="space-between" mb="md">
@@ -113,7 +112,6 @@ export default function TagPage() {
                     </Stack>
                 </Modal>
             </Card>
-            </Container>
         </Container>
     );
 }

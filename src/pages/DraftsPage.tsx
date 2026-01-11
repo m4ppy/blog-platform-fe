@@ -23,8 +23,9 @@ export default function DraftsPage() {
     }, [isAuthenticated]);
 
     return (
-        <Container size="lg" py="md">
-            <Stack>
+        <Container size="md" py="xl">
+            <Card withBorder m="md">
+            <Stack gap="md">
                 <Title order={2}>My Drafts</Title>
 
                 {drafts.length === 0 && (
@@ -54,6 +55,7 @@ export default function DraftsPage() {
                     </Card>
                 ))}
             </Stack>
+            </Card>
         </Container>
     );
 }

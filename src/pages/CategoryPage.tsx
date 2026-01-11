@@ -43,8 +43,7 @@ export default function CategoryPage() {
     };
 
     return (
-        <Container fluid>
-            <Container size="lg" py="md">
+        <Container size="md" py="xl">
             <Card withBorder m="md">
                 {/* Header */}
                 <Group justify="space-between" mb="md">
@@ -109,7 +108,6 @@ export default function CategoryPage() {
                     </Stack>
                 </Modal>
             </Card>
-            </Container>
         </Container>
     );
 }
