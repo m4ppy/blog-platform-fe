@@ -35,6 +35,7 @@ function HomePage() {
 
     return (
         <Container size="md" py="xl">
+            <Card withBorder m="md">
             <Stack gap="md">
                 {/* Header */}
                 <Group justify="space-between">
@@ -80,6 +81,7 @@ function HomePage() {
                     </Card>
                 ))}
             </Stack>
+            </Card>
         </Container>
     );
 }

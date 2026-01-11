@@ -11,8 +11,9 @@ import {
     Loader,
     Center,
     Button,
+    Card,
 } from "@mantine/core";
-import { getPostById } from "../api/post/postApi";
+import { getPostById, deletePost } from "../api/post/postApi";
 import type { Post } from "../api/post/types";
 
 export default function PostPage() {
@@ -32,6 +33,13 @@ export default function PostPage() {
             .finally(() => setLoading(false));
     }, [id]);
 
+    const handleDeletePost = async () => {
+        if (!id) return;
+        
+        await deletePost(id);
+        navigate("/");
+    }
+
     if (loading) {
         return (
             <Center mt="xl">
@@ -50,7 +58,8 @@ export default function PostPage() {
 
     return (
         <Container size="md" py="xl">
-            <Stack gap="md">
+            <Card withBorder m="md">
+            <Stack gap="xs">
                 {/* Title */}
                 <Title order={1}>{post.title}</Title>
 
@@ -91,10 +100,16 @@ export default function PostPage() {
                     mt="md"
                     onClick={() => navigate(`/posts/${post.id}/edit`)}
                 >Edit Post</Button>
+                <Button 
+                    variant="outline"
+                    mt="md"
+                    onClick={handleDeletePost}
+                >Delete Post</Button>
                 <Button variant="light" mt="md" onClick={() => window.history.back()}>
                     Back
                 </Button>
             </Stack>
+            </Card>
         </Container>
     );
 }
