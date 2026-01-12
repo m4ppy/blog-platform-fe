@@ -7,12 +7,10 @@ export async function getTags(): Promise<Tag[]> {
 }
 
 export async function createTags(names: string[]): Promise<Tag[]> {
-  const res = await axios.post<Tag[]>("/tags", {
-    names,
-  });
-  return res.data;
+    const res = await axios.post<Tag[]>("/tags", {names});
+    return res.data;
 }
 
 export async function deleteTag(id: string): Promise<void> {
-  await axios.delete(`/tags/${id}`);
+    await axios.delete(`/tags/${id}`);
 }

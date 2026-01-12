@@ -11,15 +11,20 @@ import {
     Stack,
     ActionIcon,
     Card,
+    Tooltip,
 } from "@mantine/core";
+import { notifications } from "@mantine/notifications";
 import { IconTrash } from "@tabler/icons-react";
 import { getTags, createTags, deleteTag } from "../api/tag/tagApi";
 import type { Tag } from "../api/tag/types";
+import { useAuth } from "../auth/AuthContext";
 
 export default function TagPage() {
     const [tags, setTags] = useState<Tag[]>([]);
     const [opened, setOpened] = useState(false);
     const [newTagNames, setNewTagNames] = useState<string[]>([]);
+
+    const { isAuthenticated } = useAuth();
 
 
     useEffect(() => {
@@ -39,10 +44,29 @@ export default function TagPage() {
 
         setNewTagNames([]);
         setOpened(false);
+
+        notifications.show({
+            message: "Tags created successfully",
+            color: "green",
+        });
     };
 
     const handleDeleteTag = async (id: string) => { 
-        await deleteTag(id); setTags((prev) => prev.filter((t) => t.id !== id)); 
+        try {
+            await deleteTag(id);
+            notifications.show({
+                message: "Tag deleted successfully",
+                color: "green",
+            });
+            setTags((prev) => prev.filter((t) => t.id !== id)); 
+        } catch (error: any) {
+            notifications.show({
+                title: "Delete Failed",
+                message: error.response?.data?.message ?? "Failed to delete tag",
+                color: "red",
+            });
+        }
+        
     };
 
     return (
@@ -51,7 +75,12 @@ export default function TagPage() {
                 {/* Header */}
                 <Group justify="space-between" mb="md">
                     <Title order={2}>Tags</Title>
-                    <Button onClick={() => setOpened(true)}>Create</Button>
+                    <Tooltip 
+                        label="Login to create tags"
+                        disabled={isAuthenticated}
+                    >
+                        <Button onClick={() => setOpened(true)} disabled={!isAuthenticated}>Create</Button>
+                    </Tooltip>
                 </Group>
 
                 {/* Tag List */}
@@ -72,13 +101,20 @@ export default function TagPage() {
                                 </Table.Td>
                                 <Table.Td>{tag.postCount}</Table.Td>
                                 <Table.Td ta="right">
-                                    <ActionIcon
-                                        color="red"
-                                        variant="subtle"
-                                        onClick={() => handleDeleteTag(tag.id)}
+                                    <Tooltip 
+                                        label="Login to delete tags"
+                                        disabled={isAuthenticated}
                                     >
-                                        <IconTrash size={16} />
-                                    </ActionIcon>
+                                        <ActionIcon
+                                            color="red"
+                                            variant="subtle"
+                                            disabled={!isAuthenticated}
+                                            title={isAuthenticated ? "Login to delete tags" : undefined}
+                                            onClick={() => handleDeleteTag(tag.id)}
+                                        >
+                                            <IconTrash size={16} />
+                                        </ActionIcon>
+                                    </Tooltip>
                                 </Table.Td>
                             </Table.Tr>
                         ))}

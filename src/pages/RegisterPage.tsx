@@ -12,6 +12,7 @@ import {
 } from "@mantine/core";
 import { register as registerApi } from "../api/auth/authApi";
 import { useAuth } from "../auth/AuthContext";
+import { notifications } from "@mantine/notifications";
 
 function RegisterPage() {
     const navigate = useNavigate();
@@ -37,9 +38,19 @@ function RegisterPage() {
             // Store token in AuthContext
             login(response.token);
 
+            notifications.show({
+                message: "Registration successful. Please log in.",
+                color: "green"
+            });
+
             navigate("/");
-        } catch (e) {
-            setError((e as Error).message);
+        } catch (error: any) {
+            setError(error.response?.data?.message ?? "Registration failed. Please try again.");
+
+            notifications.show({
+                message: error.response?.data?.message ?? "Registration failed. Please try again.",
+                color: "red"
+            });
         } finally {
             setLoading(false);
         }

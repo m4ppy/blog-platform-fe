@@ -7,12 +7,10 @@ export async function getCategories(): Promise<Category[]> {
 }
 
 export async function createCategory(name: string): Promise<Category> {
-  const res = await axios.post<Category>("/categories", {
-    name,
-  });
-  return res.data;
+    const res = await axios.post<Category>("/categories", {name});
+    return res.data;
 }
 
 export async function deleteCategory(id: string): Promise<void> {
-  await axios.delete(`/categories/${id}`);
+    await axios.delete(`/categories/${id}`);
 }
