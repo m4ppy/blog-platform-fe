@@ -46,7 +46,7 @@ export default function CategoryPage() {
             });
         } catch (error: any) {
             notifications.show({
-                message: error.message,
+                message: error.response?.data?.message ?? "Failed to create tag",
                 color: "red",
             });
         }
@@ -64,7 +64,7 @@ export default function CategoryPage() {
             setCategories((prev) => prev.filter((c) => c.id !== id));
         } catch (error: any) {
             notifications.show({
-                message: error.message,
+                message: error.response?.data?.message ?? "Failed to delete tag",
                 color: "red",
             });
         }

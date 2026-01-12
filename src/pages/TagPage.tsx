@@ -62,7 +62,7 @@ export default function TagPage() {
         } catch (error: any) {
             notifications.show({
                 title: "Delete Failed",
-                message: error.message,
+                message: error.response?.data?.message ?? "Failed to delete tag",
                 color: "red",
             });
         }
