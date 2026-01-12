@@ -11,15 +11,20 @@ import {
     Stack,
     ActionIcon,
     Card,
+    Tooltip,
 } from "@mantine/core";
 import { IconTrash } from "@tabler/icons-react";
 import { getCategories, createCategory, deleteCategory } from "../api/category/categoryApi";
 import type { Category } from "../api/category/types";
+import { notifications } from "@mantine/notifications";
+import { useAuth } from "../auth/AuthContext";
 
 export default function CategoryPage() {
     const [categories, setCategories] = useState<Category[]>([]);
     const [opened, setOpened] = useState(false);
     const [newCategoryName, setNewCategoryName] = useState("");
+
+    const { isAuthenticated } = useAuth();
 
     useEffect(() => {
         getCategories().then(setCategories);
@@ -27,19 +32,43 @@ export default function CategoryPage() {
 
     const handleCreateCategory = async () => {
         if (!newCategoryName.trim()) return;
+        
+        try {
+            const created = await createCategory(newCategoryName);
+    
+            setCategories((prev) => [...prev, created]);
+            setNewCategoryName("");
+            setOpened(false);
 
-        const created = await createCategory(newCategoryName);
+            notifications.show({
+                message: "Category created successfully",
+                color: "green",
+            });
+        } catch (error: any) {
+            notifications.show({
+                message: error.message,
+                color: "red",
+            });
+        }
 
-        setCategories((prev) => [...prev, created]);
-        setNewCategoryName("");
-        setOpened(false);
     };
 
 
     const handleDeleteCategory = async (id: string) => {
-        await deleteCategory(id);
+        try {
+            await deleteCategory(id);
+            notifications.show({
+                message: "Category deleted successfully",
+                color: "green",
+            });
+            setCategories((prev) => prev.filter((c) => c.id !== id));
+        } catch (error: any) {
+            notifications.show({
+                message: error.message,
+                color: "red",
+            });
+        }
 
-        setCategories((prev) => prev.filter((c) => c.id !== id));
     };
 
     return (
@@ -48,7 +77,12 @@ export default function CategoryPage() {
                 {/* Header */}
                 <Group justify="space-between" mb="md">
                     <Title order={2}>Categories</Title>
-                    <Button onClick={() => setOpened(true)}>Create</Button>
+                    <Tooltip 
+                        label="Login to create categories"
+                        disabled={isAuthenticated}
+                    >
+                    <Button onClick={() => setOpened(true)} disabled={!isAuthenticated}>Create</Button>
+                    </Tooltip>
                 </Group>
 
                 {/* Category List */}
@@ -69,13 +103,20 @@ export default function CategoryPage() {
                                 </Table.Td>
                                 <Table.Td>{category.postCount}</Table.Td>
                                 <Table.Td ta="right">
+                                    <Tooltip
+                                        label="Login to delete categories"
+                                        disabled={isAuthenticated}
+                                    >
                                     <ActionIcon
                                         color="red"
                                         variant="subtle"
+                                        disabled={!isAuthenticated}
+                                        title={!isAuthenticated ? "Login to delete categories" : undefined}
                                         onClick={() => handleDeleteCategory(category.id)}
                                     >
                                         <IconTrash size={16} />
                                     </ActionIcon>
+                                    </Tooltip>
                                 </Table.Td>
                             </Table.Tr>
                         ))}

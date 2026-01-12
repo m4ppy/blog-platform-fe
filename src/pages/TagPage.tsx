@@ -109,7 +109,7 @@ export default function TagPage() {
                                             color="red"
                                             variant="subtle"
                                             disabled={!isAuthenticated}
-                                            title={!isAuthenticated ? "Login to delete tags" : undefined}
+                                            title={isAuthenticated ? "Login to delete tags" : undefined}
                                             onClick={() => handleDeleteTag(tag.id)}
                                         >
                                             <IconTrash size={16} />
