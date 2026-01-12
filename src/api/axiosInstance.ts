@@ -1,6 +1,7 @@
 // /src/api/axiosInstance.ts
 import axios from "axios";
 import { getAccessToken, clearAuthStorage } from "../auth/authStorage";
+import { notifications } from "@mantine/notifications";
 
 const axiosInstance = axios.create({
     baseURL: "/api/v1",
@@ -33,7 +34,14 @@ axiosInstance.interceptors.request.use(
 axiosInstance.interceptors.response.use(
     (response) => response,
     (error) => {
-        if (error.response?.status === 401) {
+        const status = error.response?.status;
+        if (status === 401 || status === 403) {
+            notifications.show({
+                title: "Session Expired",
+                message: "Your session has expired. Please log in again.",
+                color: "yellow",
+            });
+
             clearAuthStorage();
             window.location.href = "/login";
         }
