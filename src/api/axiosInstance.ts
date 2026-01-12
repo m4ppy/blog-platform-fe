@@ -10,10 +10,6 @@ const axiosInstance = axios.create({
     }
 });
     
-/**
- * Request interceptor
- * - Attach access token if it exists
- */
 axiosInstance.interceptors.request.use(
     (config) => {
         const token = getAccessToken();
@@ -27,15 +23,14 @@ axiosInstance.interceptors.request.use(
     (error) => Promise.reject(error),
 );
 
-/**
- * Response interceptor
- * - Handle unauthorized responses globally
- */
+let isLogginOut = false;
+
 axiosInstance.interceptors.response.use(
     (response) => response,
     (error) => {
-        const status = error.response?.status;
-        if (status === 401 || status === 403) {
+        if ((error.response?.status === 401) && !isLogginOut) {
+            isLogginOut = true;
+
             notifications.show({
                 title: "Session Expired",
                 message: "Your session has expired. Please log in again.",

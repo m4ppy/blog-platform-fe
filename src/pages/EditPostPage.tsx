@@ -8,6 +8,7 @@ import type { Category } from "../api/category/types";
 import { getCategories } from "../api/category/categoryApi";
 import type { Tag } from "../api/tag/types";
 import { getTags } from "../api/tag/tagApi";
+import { notifications } from "@mantine/notifications";
 
 export default function EditPostPage() {
     const { id } = useParams<{ id: string }>();
@@ -56,8 +57,16 @@ export default function EditPostPage() {
 
         if (id) {
             savedPost = await updatePost(id, formData);
+            notifications.show({
+                message: "Post updated successfully",
+                color: "green",
+            });
         } else {
             savedPost = await createPost(formData);
+            notifications.show({
+                message: "Post created successfully",
+                color: "green",
+            });
         }
 
         navigate(`/posts/${savedPost.id}`);
