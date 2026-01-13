@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { fetchMyDrafts } from "../api/post/postApi";
+import { fetchMyDrafts, deletePost } from "../api/post/postApi";
 import type { Post } from "../api/post/types";
 import {
     Card,
@@ -7,20 +7,44 @@ import {
     Title,
     Text,
     Group,
-    Button,
+    ActionIcon,
     Container,
 } from "@mantine/core";
+import { IconTrash } from "@tabler/icons-react";
+import { notifications } from "@mantine/notifications";
 import { useAuth } from "../auth/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 export default function DraftsPage() {
     const [drafts, setDrafts] = useState<Post[]>([]);
     const { isAuthenticated } = useAuth();
+    const navigate = useNavigate();
 
     useEffect(() => {
         if (!isAuthenticated) return;
 
         fetchMyDrafts().then(setDrafts);
     }, [isAuthenticated]);
+
+        const handleDeletePost = async (postId: string) => {
+            try {
+                await deletePost(postId);
+
+                setDrafts((prev) => prev.filter((draft) => draft.id !== postId));
+
+                notifications.show({
+                    message: "Draft deleted successfully",
+                    color: "green",
+                });
+                
+            } catch (error: any) {
+                notifications.show({
+                    message: error.message,
+                    color: "red",
+                });
+            }
+            
+        }
 
     return (
         <Container size="md" py="xl">
@@ -37,20 +61,23 @@ export default function DraftsPage() {
                         key={draft.id}
                         withBorder
                         component="a"
-                        href={`/posts/${draft.id}`}
+                        onClick={() => navigate(`/posts/${draft.id}`)}
                         style={{ textDecoration: "none" }}
                     >
                         <Group justify="space-between">
                             <Text fw={600}>{draft.title}</Text>
 
-                            <Button
-                                size="xs"
+                            <ActionIcon
+                                color="red"
+                                variant="subtle"
+                                disabled={!isAuthenticated}
                                 onClick={(e) => {
-                                    e.preventDefault(); // prevent link click
+                                    e.stopPropagation();
+                                    handleDeletePost(draft.id);
                                 }}
                             >
-                                Publish
-                            </Button>
+                                <IconTrash size={16} />
+                            </ActionIcon>
                         </Group>
                     </Card>
                 ))}

@@ -12,6 +12,7 @@ import {
 } from "@mantine/core";
 import { useAuth } from "../auth/AuthContext";
 import { login as loginApi } from "../api/auth/authApi";
+import { notifications } from "@mantine/notifications";
 
 function LoginPage() {
     const navigate = useNavigate();
@@ -33,15 +34,23 @@ function LoginPage() {
                 password,
             });
 
+            notifications.show({
+                message: "Login successful",
+                color: "green"
+            })
+
             // Store token in AuthContext
             login(response.token);
 
             // Redirect
             navigate("/");
         } catch (err: any) {
-            setError(
-                err.response?.data?.message ?? "Login failed"
-        );
+            setError(err.response?.data?.message ?? "Login failed");
+
+            notifications.show({
+                message: err.response?.data?.message ?? "Login failed",
+                color: "red"
+            })
         } finally {
             setLoading(false);
         }

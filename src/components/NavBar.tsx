@@ -23,6 +23,9 @@ export default function Navbar() {
                 {/* Center: Navigation tabs */}
                 <Group gap="lg">
                     <>
+                        <Anchor component={Link} to="/">
+                            Home
+                        </Anchor>
                         <Anchor component={Link} to="/categories">
                             Categories
                         </Anchor>

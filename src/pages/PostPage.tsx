@@ -15,10 +15,13 @@ import {
 } from "@mantine/core";
 import { getPostById, deletePost } from "../api/post/postApi";
 import type { Post } from "../api/post/types";
+import { notifications } from "@mantine/notifications";
+import { useAuth } from "../auth/AuthContext";
 
 export default function PostPage() {
     const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
+    const { isAuthenticated } = useAuth();
 
     const [post, setPost] = useState<Post | null>(null);
     const [loading, setLoading] = useState(true);
@@ -27,17 +30,50 @@ export default function PostPage() {
     useEffect(() => {
         if (!id) return;
 
-        getPostById(id)
-            .then(setPost)
-            .catch(() => setError("Failed to load post"))
-            .finally(() => setLoading(false));
+        const loadPost = async () => {
+        try {
+            const post = await getPostById(id);
+            setPost(post);
+        } catch {
+            setError("Failed to load post");
+            notifications.show({
+                message: "Failed to load post",
+                color: "red",
+            });
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    loadPost();
+
     }, [id]);
 
     const handleDeletePost = async () => {
         if (!id) return;
+
+        if (!isAuthenticated) {
+            notifications.show({
+                message: "Please log in to delete this post",
+                color: "yellow",
+            });
+            return;
+        }
+
+        try {
+            await deletePost(id);
+            notifications.show({
+                message: "Post deleted successfully",
+                color: "green",
+            });
+            navigate("/");
+        } catch (error: any) {
+            notifications.show({
+                message: error.message,
+                color: "red",
+            });
+        }
         
-        await deletePost(id);
-        navigate("/");
     }
 
     if (loading) {
@@ -98,14 +134,22 @@ export default function PostPage() {
                 <Button
                     variant="outline"
                     mt="md"
+                    disabled={!isAuthenticated}
                     onClick={() => navigate(`/posts/${post.id}/edit`)}
                 >Edit Post</Button>
                 <Button 
                     variant="outline"
                     mt="md"
+                    disabled={!isAuthenticated}
                     onClick={handleDeletePost}
                 >Delete Post</Button>
-                <Button variant="light" mt="md" onClick={() => window.history.back()}>
+                <Button variant="light" mt="md" onClick={() => {
+                    if (post.status === "PUBLISHED") {
+                        navigate("/");
+                    } else {
+                        navigate("/drafts");
+                    }
+                }}>
                     Back
                 </Button>
             </Stack>
