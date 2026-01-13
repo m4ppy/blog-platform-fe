@@ -3,22 +3,22 @@ import { Navigate } from "react-router-dom";
 import { useAuth } from "../auth/AuthContext";
 
 type Props = {
-  children: ReactNode;
+    children: ReactNode;
 };
 
 function ProtectedRoute({ children }: Props) {
-  const { isAuthenticated, initialized } = useAuth();
+    const { isAuthenticated, initialized } = useAuth();
 
-  // Wait until auth state is restored from localStorage
-  if (!initialized) {
-    return null; // or a loading spinner
-  }
+    // Wait until auth state is restored from localStorage
+    if (!initialized) {
+        return null; // or a loading spinner
+    }
 
-  if (!isAuthenticated) {
-    return <Navigate to="/login" replace />;
-  }
+    if (!isAuthenticated) {
+        return <Navigate to="/login" replace />;
+    }
 
-  return <>{children}</>;
+    return <>{children}</>;
 }
 
 export default ProtectedRoute;
