@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { Container, Loader, Center } from "@mantine/core";
+import { Container, Loader, Center, Card } from "@mantine/core";
 import PostForm from "../components/PostForm";
 import type { PostStatus, Post, PostRequest } from "../api/post/types";
 import { createPost, updatePost, getPostById } from "../api/post/postApi";
@@ -127,13 +127,15 @@ export default function EditPostPage() {
     }
 
     return (
-        <Container size="md">
-            <PostForm 
-                initialPost={post ?? undefined} 
-                categories={categories} 
-                tags={tags}
-                onSubmit={handleSubmit} 
-            />
+        <Container size="md" py="xl">
+            <Card withBorder m="md">
+                <PostForm 
+                    initialPost={post ?? undefined} 
+                    categories={categories} 
+                    tags={tags}
+                    onSubmit={handleSubmit} 
+                />
+            </Card>
         </Container>
     );
 }

@@ -16,10 +16,12 @@ import {
 import { getPostById, deletePost } from "../api/post/postApi";
 import type { Post } from "../api/post/types";
 import { notifications } from "@mantine/notifications";
+import { useAuth } from "../auth/AuthContext";
 
 export default function PostPage() {
     const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
+    const { isAuthenticated } = useAuth();
 
     const [post, setPost] = useState<Post | null>(null);
     const [loading, setLoading] = useState(true);
@@ -49,6 +51,14 @@ export default function PostPage() {
 
     const handleDeletePost = async () => {
         if (!id) return;
+
+        if (!isAuthenticated) {
+            notifications.show({
+                message: "Please log in to delete this post",
+                color: "yellow",
+            });
+            return;
+        }
 
         try {
             await deletePost(id);
@@ -124,11 +134,13 @@ export default function PostPage() {
                 <Button
                     variant="outline"
                     mt="md"
+                    disabled={!isAuthenticated}
                     onClick={() => navigate(`/posts/${post.id}/edit`)}
                 >Edit Post</Button>
                 <Button 
                     variant="outline"
                     mt="md"
+                    disabled={!isAuthenticated}
                     onClick={handleDeletePost}
                 >Delete Post</Button>
                 <Button variant="light" mt="md" onClick={() => {
