@@ -115,13 +115,16 @@ Knowing *what not to build* is as important as knowing what to build.
 
 ## Project Structure (Simplified)
 
+```
 src/
-├── api/ # API calls
-├── auth/ # Auth context & utilities
-├── pages/ # Route pages
-├── components/ # Reusable UI components
-├── utils/ # Helpers (error handling, etc.)
-├── axiosInstance.ts # Global Axios config
+  ├── api/ # API calls
+  ├── auth/ # Auth context & utilities
+  ├── pages/ # Route pages
+  ├── components/ # Reusable UI components
+  ├── utils/ # Helpers (error handling, etc.)
+  ├── axiosInstance.ts # Global Axios config
+```
+---
 
 ## What This Project Represents
 
