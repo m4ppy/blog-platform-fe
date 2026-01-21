@@ -117,12 +117,12 @@ Knowing *what not to build* is as important as knowing what to build.
 
 ```
 src/
-  ├── api/ # API calls
+  ├── api/ # API calls & Global Axios config
   ├── auth/ # Auth context & utilities
-  ├── pages/ # Route pages
   ├── components/ # Reusable UI components
-  ├── utils/ # Helpers (error handling, etc.)
-  ├── axiosInstance.ts # Global Axios config
+  ├── pages/ # UI pages
+  ├── routes/ # App Router & Protected route 
+
 ```
 ---
 
@@ -165,4 +165,4 @@ This project helped me gain confidence in:
 
 ---
 
-**Author:** Leon
+**Author:** Leon Choi
